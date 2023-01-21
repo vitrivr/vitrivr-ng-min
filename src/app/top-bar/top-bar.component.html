@@ -1,0 +1,12 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button ><mat-icon *ngIf="showQueryPane">keyboard_arrow_down</mat-icon><mat-icon *ngIf="!showQueryPane">keyboard_arrow_up</mat-icon>
+        <img src="../assets/images/vitrivr_logo.png">
+    </button>
+    </mat-toolbar-row>
+
+    <mat-toolbar-row *ngIf="showQueryPane">
+        <span>TODO: query components go here</span>
+    </mat-toolbar-row>
+
+</mat-toolbar>
