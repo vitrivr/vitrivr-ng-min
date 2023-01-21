@@ -7,6 +7,8 @@
 
     <mat-toolbar-row *ngIf="showQueryPane">
         <span>TODO: query components go here</span>
+        <button mat-button (click)="startSearch()" ><mat-icon>search</mat-icon></button>
     </mat-toolbar-row>
 
 </mat-toolbar>
+<mat-progress-bar mode="indeterminate" *ngIf="(queryRunning | async)"></mat-progress-bar>

@@ -1,3 +1,4 @@
+import { QueryService } from './../query/query.service';
 import { Component, NgModule } from '@angular/core';
 
 
@@ -8,10 +9,23 @@ import { Component, NgModule } from '@angular/core';
 })
 export class TopBarComponent {
 
+  constructor(public queryService: QueryService) {
+
+  }
+
   public showQueryPane: Boolean = true;
+
+  public queryRunning = this.queryService.queryRunning.asObservable();
 
   public toggleQueryPane() {
     this.showQueryPane = !this.showQueryPane;
   }
+
+  public startSearch() {
+    this.queryService.query();
+    this.showQueryPane = false;
+  }
+
+
 
 }

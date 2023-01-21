@@ -1,0 +1,14 @@
+<ng-container *ngIf="queryResults | async as results">
+
+    <div *ngFor="let obj of results" class="objectbox">
+
+        <app-result-tile *ngFor="let segment of obj.segments" [segmentId]="segment.id" [score]="segment.score"></app-result-tile> 
+
+    </div>
+
+</ng-container>
+
+
+
+
+
