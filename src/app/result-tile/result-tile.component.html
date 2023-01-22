@@ -1,4 +1,8 @@
-<div [style.background-color]="color" style="display: inline-block;">
-    <img src="{{base}}{{segmentId}}" class="previewImage"/> 
+<div [style.background-color]="color" class="tile">
+    <img src="{{base}}{{scoredSegment.id}}" class="previewImage" (click)="show(scoredSegment.id)"/> 
+    <div class="footer">
+        <button (click)="moreLikeThis(scoredSegment.id)"><mat-icon>youtube_searched_for</mat-icon></button>
+        <button (click)="submit(scoredSegment.id)"><mat-icon>send</mat-icon></button>
+    </div>
 </div>
 

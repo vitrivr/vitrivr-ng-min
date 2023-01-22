@@ -1,3 +1,19 @@
+.tile {
+    display: inline-block;
+    position: relative;
+}
+
 .previewImage {
     padding: 5px;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: none;
+}
+
+.tile:hover .footer {
+    display: block;
 }

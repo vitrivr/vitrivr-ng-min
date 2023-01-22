@@ -13,17 +13,20 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 import { Configuration } from 'openapi/cineast';
 import { HttpClientModule } from '@angular/common/http';
 import { ResultDisplayComponent } from './result-display/result-display.component';
 import { CommonModule } from '@angular/common';
 import { ResultTileComponent } from './result-tile/result-tile.component';
+import { ResultDialogComponent } from './result-dialog/result-dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
     TopBarComponent,
     ResultDisplayComponent,
-    ResultTileComponent
+    ResultTileComponent,
+    ResultDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -34,6 +37,7 @@ import { ResultTileComponent } from './result-tile/result-tile.component';
     MatToolbarModule,
     MatButtonModule,
     MatProgressBarModule,
+    MatDialogModule,
     HttpClientModule,
     ApiModule.forRoot(
       () => {
