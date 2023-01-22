@@ -8,25 +8,30 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Configuration } from 'openapi/cineast';
 import { HttpClientModule } from '@angular/common/http';
 import { ResultDisplayComponent } from './result-display/result-display.component';
 import { CommonModule } from '@angular/common';
 import { ResultTileComponent } from './result-tile/result-tile.component';
 import { ResultDialogComponent } from './result-dialog/result-dialog.component';
+import { QueryTextInputComponent } from './query-text-input/query-text-input.component';
 @NgModule({
   declarations: [
     AppComponent,
     TopBarComponent,
     ResultDisplayComponent,
     ResultTileComponent,
-    ResultDialogComponent
+    ResultDialogComponent,
+    QueryTextInputComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +43,10 @@ import { ResultDialogComponent } from './result-dialog/result-dialog.component';
     MatButtonModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     ApiModule.forRoot(
       () => {

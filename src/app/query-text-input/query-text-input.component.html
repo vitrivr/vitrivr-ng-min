@@ -1,0 +1,6 @@
+<div>
+<mat-form-field class="textinput" *ngFor="let item of controls | keyvalue">
+    <mat-label>{{item.key}}</mat-label>
+    <input [formControl]="item.value" matInput type="text" placeholder="Search text">
+</mat-form-field>
+</div>

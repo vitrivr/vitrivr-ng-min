@@ -1,12 +1,12 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
         <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button ><mat-icon *ngIf="showQueryPane">keyboard_arrow_down</mat-icon><mat-icon *ngIf="!showQueryPane">keyboard_arrow_up</mat-icon>
-        <img src="../assets/images/vitrivr_logo.png"> - minimal
+        <img src="../assets/images/vitrivr_logo.png"> minimal
     </button>
     </mat-toolbar-row>
 
     <mat-toolbar-row *ngIf="showQueryPane">
-        <span>TODO: query components go here</span>
+        <app-query-text-input *ngFor="let form of inputs" [controls]="form"></app-query-text-input>
         <button mat-button (click)="startSearch()" ><mat-icon>search</mat-icon></button>
     </mat-toolbar-row>
 

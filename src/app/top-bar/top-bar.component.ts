@@ -1,3 +1,4 @@
+import { FormControl } from '@angular/forms';
 import { QueryService } from './../query/query.service';
 import { Component, NgModule } from '@angular/core';
 
@@ -27,5 +28,8 @@ export class TopBarComponent {
   }
 
 
+  get inputs(): Array<Map<String, FormControl>> {
+    return this.queryService.inputs;
+  }
 
 }

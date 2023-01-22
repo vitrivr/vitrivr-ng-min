@@ -1,3 +1,4 @@
+import { FormControl } from '@angular/forms';
 import { Settings } from './../settings.model';
 import { StringDoublePair } from './../../../openapi/cineast/model/stringDoublePair';
 import { SimilarityQueryResult } from './../../../openapi/cineast/model/similarityQueryResult';
@@ -18,13 +19,23 @@ import { BehaviorSubject, map } from 'rxjs';
 @Injectable()
 export class QueryService {
 
+    public inputs = new Array<Map<String, FormControl>>();
+
     public constructor(
         private segmentsService: SegmentsService,
         private segmentService: SegmentService,
         private objectService: ObjectService
     ) {
 
+        let h = new Map<String, FormControl>();
+        for (let element of Settings.queryCategories) {
+            h.set(element[0], new FormControl())
+        }
+
+        this.inputs.push(h);
+
     }
+
 
     public queryRunning = new BehaviorSubject<Boolean>(false);
     public lastQueryResult = new BehaviorSubject<QueryResult | null>(null);
@@ -39,42 +50,55 @@ export class QueryService {
             return;
         }
 
+        let queries = new Array<StagedSimilarityQuery>();
+
+        for (let input of this.inputs) {
+            let terms = new Array<QueryTerm>();
+
+            for (let [key, value] of input) {
+
+                if (value.value == null) {
+                    continue;
+                }
+
+                terms.push(
+                    {
+                        categories: [key],
+                        data: value.value,
+                        type: 'TEXT'
+                    } as QueryTerm
+                );
+
+            }
+
+            if (terms.length > 0) {
+                queries.push(
+                    {
+                        stages: [
+                            {
+                                terms: terms
+                            }
+                        ]
+
+                    } as StagedSimilarityQuery
+                )
+            }
+
+        }
+
+        if (queries.length == 0) {
+            return;
+        }
+
+        let query = {
+            queries: queries
+        } as TemporalQuery;
+
         console.log('starting query');
 
         this.queryRunning.next(true);
         this.lastQueryResult.next(new QueryResult([])); //reset display
-
-        let query = { //TODO get from UI
-            queries: [
-                {
-                    stages: [
-                        {
-                            terms: [
-                                {
-                                    categories: ['clip'],
-                                    data: 'a flat fish',
-                                    type: 'TEXT'
-                                } as QueryTerm
-                            ]
-                        } as QueryStage,
-                    ]
-                } as StagedSimilarityQuery/*,
-                {
-                    stages:[
-                        {
-                            terms: [
-                                {
-                                    categories: ['clip'],
-                                    data: 'a diver',
-                                    type: 'TEXT'
-                                } as QueryTerm
-                            ]
-                        } as QueryStage,
-                    ]
-                } as StagedSimilarityQuery*/
-            ]
-        } as TemporalQuery;
-
+        
         this.segmentsService.findSegmentSimilarTemporal(query).subscribe(
             {
                 //complete: () => { this.queryRunning.next(false); },
@@ -267,7 +291,7 @@ export class QueryService {
 
         let objects = new Map<String, Array<ScoredSegment>>();
 
-        for(let pair of results) {
+        for (let pair of results) {
             let segmentDescriptor = this.mediaSegments.get(pair.key || '')
             if (segmentDescriptor !== undefined) {
                 let objectId = segmentDescriptor.objectId || '';
@@ -280,7 +304,7 @@ export class QueryService {
 
         let scoredObjects = new Array<ScoredObject>();
 
-        for(let [objectId, segments] of objects) {
+        for (let [objectId, segments] of objects) {
             scoredObjects.push(new ScoredObject(objectId, segments));
         }
 
