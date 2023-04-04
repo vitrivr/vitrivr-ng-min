@@ -43,6 +43,11 @@ export class QueryService {
     private mediaSegments = new Map<String, MediaSegmentDescriptor>()
     private mediaObjects = new Map<String, MediaObjectDescriptor>()
 
+
+    public mediaSegment(segmentId: String): MediaSegmentDescriptor | null {
+      return this.mediaSegments.get(segmentId) || null;
+    }
+
     public query() {
 
         if (this.queryRunning.getValue()) {
@@ -98,7 +103,7 @@ export class QueryService {
 
         this.queryRunning.next(true);
         this.lastQueryResult.next(new QueryResult([])); //reset display
-        
+
         this.segmentsService.findSegmentSimilarTemporal(query).subscribe(
             {
                 //complete: () => { this.queryRunning.next(false); },
