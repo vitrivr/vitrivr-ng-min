@@ -6,7 +6,12 @@
     </mat-toolbar-row>
 
     <mat-toolbar-row *ngIf="showQueryPane">
-        <app-query-text-input *ngFor="let form of inputs" [controls]="form"></app-query-text-input>
+        <div *ngFor="let form of inputs; index as i">
+            <app-query-text-input [controls]="form"></app-query-text-input>
+            <div *ngIf="i > 0"> <!-- TODO horizontal spacing? --> </div>
+        </div>
+        <button mat-button (click)="addInputBox()" ><mat-icon>add_circle_outline</mat-icon></button>
+        <button mat-button (click)="removeInputBox()" ><mat-icon>remove_circle_outline</mat-icon></button>
         <button mat-button (click)="startSearch()" ><mat-icon>search</mat-icon></button>
     </mat-toolbar-row>
 

@@ -27,6 +27,12 @@ export class QueryService {
         private objectService: ObjectService
     ) {
 
+        this.addInput();
+
+    }
+
+    public addInput() {
+
         let h = new Map<String, FormControl>();
         for (let element of Settings.queryCategories) {
             h.set(element[0], new FormControl())
@@ -36,6 +42,11 @@ export class QueryService {
 
     }
 
+    public removeInput() {
+        if(this.inputs.length > 1) {
+            this.inputs.splice(this.inputs.length - 1, 1);
+        }
+    }
 
     public queryRunning = new BehaviorSubject<Boolean>(false);
     public lastQueryResult = new BehaviorSubject<QueryResult | null>(null);

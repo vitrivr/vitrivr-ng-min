@@ -27,6 +27,14 @@ export class TopBarComponent {
     this.showQueryPane = false;
   }
 
+  public addInputBox() {
+    this.queryService.addInput();
+  }
+
+  public removeInputBox() {
+    this.queryService.removeInput();
+  }
+
 
   get inputs(): Array<Map<String, FormControl>> {
     return this.queryService.inputs;
