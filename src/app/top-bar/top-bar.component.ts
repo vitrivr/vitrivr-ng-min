@@ -36,7 +36,7 @@ export class TopBarComponent {
   }
 
 
-  get inputs(): Array<Map<String, FormControl>> {
+  get inputs(): Array<Map<string, FormControl>> {
     return this.queryService.inputs;
   }
 

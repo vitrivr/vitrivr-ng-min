@@ -19,7 +19,7 @@ import { BehaviorSubject, map } from 'rxjs';
 @Injectable()
 export class QueryService {
 
-    public inputs = new Array<Map<String, FormControl>>();
+    public inputs = new Array<Map<string, FormControl>>();
 
     public constructor(
         private segmentsService: SegmentsService,
@@ -33,7 +33,7 @@ export class QueryService {
 
     public addInput() {
 
-        let h = new Map<String, FormControl>();
+        let h = new Map<string, FormControl>();
         for (let element of Settings.queryCategories) {
             h.set(element[0], new FormControl())
         }
@@ -51,11 +51,11 @@ export class QueryService {
     public queryRunning = new BehaviorSubject<Boolean>(false);
     public lastQueryResult = new BehaviorSubject<QueryResult | null>(null);
 
-    private mediaSegments = new Map<String, MediaSegmentDescriptor>()
-    private mediaObjects = new Map<String, MediaObjectDescriptor>()
+    private mediaSegments = new Map<string, MediaSegmentDescriptor>()
+    private mediaObjects = new Map<string, MediaObjectDescriptor>()
 
 
-    public mediaSegment(segmentId: String): MediaSegmentDescriptor | null {
+    public mediaSegment(segmentId: string): MediaSegmentDescriptor | null {
       return this.mediaSegments.get(segmentId) || null;
     }
 
@@ -138,7 +138,7 @@ export class QueryService {
                         );
 
                         // lookup unknown segments
-                        let unknown_ids = [...new Set(content.flatMap(res => (res.segments || new Array<String>())))].filter(id => !this.mediaSegments.has(id))
+                        let unknown_ids = [...new Set(content.flatMap(res => (res.segments || new Array<string>())))].filter(id => !this.mediaSegments.has(id))
 
                         if (unknown_ids.length > 0) {
 
@@ -206,7 +206,7 @@ export class QueryService {
         )
     }
 
-    public moreLikeThis(segmentId: String) {
+    public moreLikeThis(segmentId: string) {
 
         if (this.queryRunning.getValue()) {
             console.log('only one query can be active');
@@ -305,7 +305,7 @@ export class QueryService {
 
     private processResultPairs(results: Array<StringDoublePair>): QueryResult {
 
-        let objects = new Map<String, Array<ScoredSegment>>();
+        let objects = new Map<string, Array<ScoredSegment>>();
 
         for (let pair of results) {
             let segmentDescriptor = this.mediaSegments.get(pair.key || '')

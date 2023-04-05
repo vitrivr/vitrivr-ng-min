@@ -27,24 +27,25 @@ export class ResultTileComponent {
 
   base = Settings.thumbnailBasePath;
 
-  get color(): String {
+  get color(): string {
     let c = Math.round((1 - this.scoredSegment.score) * 255);
     return 'rgb(' + c + ', 255, ' + c + ')';
   }
 
-  public show(segmentId: String) {
+  public show(segmentId: string) {
     this.dialog.open(ResultDialogComponent, {
-      data: this.scoredSegment
+      data: this.scoredSegment,
+      width: '900px',
     });
   }
 
-  public moreLikeThis(segmentId: String) {
+  public moreLikeThis(segmentId: string) {
 
     this.queryService.moreLikeThis(segmentId);
 
   }
 
-  public submit(segmentId: String) {
+  public submit(segmentId: string) {
 
     const segment = this.queryService.mediaSegment(segmentId);
 

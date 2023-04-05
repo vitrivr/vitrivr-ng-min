@@ -1,1 +1,7 @@
-<h2>TODO: show result for {{data.id}}</h2>
+<h1 mat-dialog-title>Video Player for {{data.id}} | {{data.score}}</h1>
+<div mat-dialog-content>
+  <video #videoPlayer class="video-player" preload="auto" [src]="mediaUrl | async" autoplay controls></video>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="submit()"><mat-icon>send</mat-icon></button>
+</div>

@@ -1,7 +1,11 @@
 export class Settings {
 
-  public static readonly cineastBasePath = 'http://172.16.0.135:7000';
-  public static readonly thumbnailBasePath = 'http://172.16.0.135:7000/thumbnails/';
+  public static readonly cineastBasePath = 'http://localhost:8080';
+  public static readonly thumbnailBasePath = 'http://localhost:8080/thumbnails/';
+  /**
+   * Expects that objectBasePath/<objectId> serves the video
+   */
+  public static readonly objectBasePath = 'http://localhost:8080/objects/';
   public static readonly moreLikeThisCategory = 'clip';
   public static readonly queryCategories = [
     ['clip', 'Clip'], ['visualtextcoembedding', 'Co-Embedding']
