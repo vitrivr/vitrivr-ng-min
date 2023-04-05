@@ -5,6 +5,7 @@ import {MediaSegmentQueryResult, SegmentService} from "../../../openapi/cineast"
 import {map, Observable, tap} from "rxjs";
 import {Settings} from "../settings.model";
 import {SubmissionService} from "../../../openapi/dres";
+import {DresService} from "../query/dres.service";
 
 @Component({
   selector: 'app-result-dialog',
@@ -19,7 +20,7 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ScoredSegment,
     private segmentService: SegmentService,
-    private submissionService: SubmissionService
+    private dres: DresService
   ) {
 
   }
@@ -77,38 +78,9 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
   }
 
   public submit() {
-
-    const segment = this.currentSegment();
-    const segmentId = this.data.id;
-
-    if (segment == null) {
-      console.log('segment with id ' + segmentId + ' not found');
-      return
-    }
-
-    const timecode = this.formatTimeCode(((segment.startabs || 0) + (segment.endabs || 0)) / 2)
-
-    this.submissionService.getApiV1Submit(
-      undefined,
-      segment.objectId,
-      undefined,
-      undefined,
-      undefined,
-      timecode
-    )
-    console.log('submitted segment ' + segmentId);
-
+    // @ts-ignore
+    this.dres.submit(this.currentSegment());
   }
 
-  private formatTimeCode(seconds: number): string {
-
-    const hours = Math.floor(seconds / 3600);
-    seconds -= (hours * 3600);
-    const minutes = Math.floor(seconds / 60);
-    seconds -= (minutes * 60);
-
-    return hours + ':' + minutes + ':' + seconds + ':0'; //TODO do we need leading zeros?
-
-  }
 
 } // a bride in a white dress

@@ -10,5 +10,6 @@ export class Settings {
   public static readonly queryCategories = [
     ['clip', 'Clip'], ['visualtextcoembedding', 'Co-Embedding']
   ];
+  public static readonly dresBaseApi = "https://dmi-dres.dmi.unibas.ch"
 
 }

@@ -6,6 +6,7 @@ import { Settings } from './../settings.model';
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {SubmissionService} from "../../../openapi/dres";
+import {DresService} from "../query/dres.service";
 
 @Component({
   selector: 'app-result-tile',
@@ -16,7 +17,7 @@ export class ResultTileComponent {
 
   constructor(
     private queryService: QueryService,
-    private submissionService: SubmissionService,
+    private dresService: DresService,
     private dialog: MatDialog
     ) {
 
@@ -48,34 +49,11 @@ export class ResultTileComponent {
   public submit(segmentId: string) {
 
     const segment = this.queryService.mediaSegment(segmentId);
-
-    if (segment == null) {
-      console.log('segment with id ' + segmentId + ' not found');
-      return
+    if (segment) {
+      this.dresService.submit(segment);
+    }else{
+      console.log('Couldnt submit due to no segment being present')
     }
-
-    const timecode = this.formatTimeCode(((segment.startabs || 0) + (segment.endabs || 0)) / 2)
-
-    this.submissionService.getApiV1Submit(
-      undefined,
-      segment.objectId,
-      undefined,
-      undefined,
-      undefined,
-      timecode
-    )
-    console.log('submitted segment ' + segmentId);
-
-  }
-
-  private formatTimeCode(seconds: number): string {
-
-    const hours = Math.floor(seconds / 3600);
-    seconds -= (hours * 3600);
-    const minutes = Math.floor(seconds / 60);
-    seconds -= (minutes * 60);
-
-    return hours + ':' + minutes + ':' + seconds + ':0'; //TODO do we need leading zeros?
 
   }
 

@@ -13,12 +13,9 @@ export class QueryTextInputComponent {
 controls: Map<string, FormControl> = new Map();
 
 resolveInputLabel(key: string){
-  console.log("KEY:",key);
   const a = Settings.queryCategories.filter((categoryTuple) => {
-    console.log("TEST", categoryTuple);
     return categoryTuple[0] == key
   })[0];
-  console.log(a);
   return a[1];
 }
 

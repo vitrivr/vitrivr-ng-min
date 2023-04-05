@@ -1,5 +1,6 @@
 import { Settings } from './settings.model';
 import { ApiModule } from './../../openapi/cineast/api.module';
+import { ApiModule as DresApi} from 'openapi/dres/api.module';
 import { QueryService } from './query/query.service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,12 +19,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Configuration } from 'openapi/cineast';
+import { Configuration as DresConfig } from 'openapi/dres';
 import { HttpClientModule } from '@angular/common/http';
 import { ResultDisplayComponent } from './result-display/result-display.component';
 import { CommonModule } from '@angular/common';
 import { ResultTileComponent } from './result-tile/result-tile.component';
 import { ResultDialogComponent } from './result-dialog/result-dialog.component';
 import { QueryTextInputComponent } from './query-text-input/query-text-input.component';
+import {DresService} from "./query/dres.service";
 @NgModule({
   declarations: [
     AppComponent,
@@ -54,10 +57,18 @@ import { QueryTextInputComponent } from './query-text-input/query-text-input.com
           basePath: Settings.cineastBasePath
         });
       }
-    )
+    ),
+    DresApi.forRoot(
+      () => {
+        return new DresConfig({
+          basePath: Settings.dresBaseApi, withCredentials: true
+        });
+      }
+    ),
   ],
   providers: [
-    QueryService
+    QueryService,
+    DresService
   ],
   bootstrap: [AppComponent]
 })
