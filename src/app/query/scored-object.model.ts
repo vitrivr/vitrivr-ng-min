@@ -12,6 +12,8 @@ export class ScoredObject {
         this.score = ScoredObject.aggregateScores(segments);
     }
 
+
+
     static aggregateScores(segments: Array<ScoredSegment>): number {
         return Math.max(...segments.map(segment => segment.score));
     }

@@ -4,3 +4,52 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/** In their unmatched wisdowm, angular deprecated flex-layout (fx* directives) and thus, we'll have to build our own */
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.flex-layout-row {
+  flex-direction: row;
+}
+
+.flex-layout-column {
+  flex-direction: column;
+}
+
+.flex-start{
+  justify-content: flex-start;
+}
+
+.flex-space-between {
+  justify-content: space-between;
+}
+
+.flex-align-start {
+  align-items: flex-start;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.flex-align-stretch {
+  align-items: stretch;
+}
+
+.flex-content-align-start {
+  align-content: flex-start;
+}
+
+.flex-content-align-center {
+  align-content: center;
+}
+
+.flex-content-align-between {
+  align-content: space-between;
+}
+
+.spacer-flex {
+  flex: 1 1 auto;
+}

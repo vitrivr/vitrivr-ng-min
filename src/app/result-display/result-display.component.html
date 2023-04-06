@@ -2,7 +2,7 @@
 
     <div *ngFor="let obj of results" class="objectbox">
 
-        <app-result-tile *ngFor="let segment of obj.segments" [scoredSegment]="segment"></app-result-tile> 
+        <app-result-tile *ngFor="let segment of obj.segments; trackBy:trackBySegment" [scoredSegment]="segment"></app-result-tile>
 
     </div>
 

@@ -1,7 +1,11 @@
-<h1 mat-dialog-title>Video Player for {{data.id}} | {{data.score}}</h1>
+<div mat-dialog-title >
+  <div class="flex-container flex-layout-row flex-space-between">
+    <h1 style="flex-basis: 80%;">Video Player for {{data.id}} | {{data.score}}</h1>
+    <span class="spacer-flex"></span>
+    <button style="flex-basis: 20%;" mat-icon-color color="primary" (click)="submit()"><mat-icon>send</mat-icon></button>
+
+  </div>
+</div>
 <div mat-dialog-content>
   <video #videoPlayer class="video-player" preload="auto" [src]="mediaUrl | async" autoplay controls></video>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="submit()"><mat-icon>send</mat-icon></button>
 </div>

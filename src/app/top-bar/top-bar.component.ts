@@ -28,6 +28,21 @@ export class TopBarComponent {
     this.showQueryPane = false;
   }
 
+  private _lastEnter: number = 0;
+
+  @HostListener('window:keyup', ['$event'])
+  public keyEvent(event: KeyboardEvent){
+    if (event.keyCode === 13) {
+      const timestamp = Date.now();
+      if (timestamp - this._lastEnter < 1000) {
+        this.startSearch();
+        this._lastEnter = 0;
+      } else {
+        this._lastEnter = timestamp;
+      }
+    }
+  }
+
   public addInputBox() {
     this.queryService.addInput();
   }
