@@ -1,4 +1,4 @@
-<div class="inputstack">
+<div class="flex-container flex-space-between flex-layout-column">
 <mat-form-field class="textinput" *ngFor="let item of controls | keyvalue">
     <mat-label>{{resolveInputLabel(item.key)}}</mat-label>
     <input [formControl]="item.value" matInput type="text" placeholder="Search text">

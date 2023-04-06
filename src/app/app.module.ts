@@ -27,6 +27,7 @@ import { ResultTileComponent } from './result-tile/result-tile.component';
 import { ResultDialogComponent } from './result-dialog/result-dialog.component';
 import { QueryTextInputComponent } from './query-text-input/query-text-input.component';
 import {DresService} from "./query/dres.service";
+import {MatTooltipModule} from "@angular/material/tooltip";
 @NgModule({
   declarations: [
     AppComponent,
@@ -65,6 +66,7 @@ import {DresService} from "./query/dres.service";
         });
       }
     ),
+    MatTooltipModule,
   ],
   providers: [
     QueryService,

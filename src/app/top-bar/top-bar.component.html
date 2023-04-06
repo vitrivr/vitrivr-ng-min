@@ -1,18 +1,22 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
-        <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button ><mat-icon *ngIf="showQueryPane">keyboard_arrow_down</mat-icon><mat-icon *ngIf="!showQueryPane">keyboard_arrow_up</mat-icon>
+        <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button ><mat-icon>keyboard_arrow_{{showQueryPane ? 'up' : 'down'}}</mat-icon>
         <img src="../assets/images/vitrivr_logo.png"> minimal
     </button>
     </mat-toolbar-row>
 
-    <mat-toolbar-row *ngIf="showQueryPane">
-        <div *ngFor="let form of inputs; index as i">
-            <app-query-text-input [controls]="form"></app-query-text-input>
-            <div *ngIf="i > 0"> <!-- TODO horizontal spacing? --> </div>
+    <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start" [style.height]="calcHeight()">
+      <div style="flex-basis: auto;" class="flex-container flex-layout-row ">
+        <div *ngFor="let form of inputs; index as i" class="flex-container flex-layout-row flex-align-center">
+          <div *ngIf="i > 0"><mat-icon>keyboard_arrow_right</mat-icon></div>
+          <app-query-text-input [controls]="form"></app-query-text-input>
         </div>
-        <button mat-button (click)="addInputBox()" ><mat-icon>add_circle_outline</mat-icon></button>
-        <button mat-button (click)="removeInputBox()" ><mat-icon>remove_circle_outline</mat-icon></button>
-        <button mat-button (click)="startSearch()" ><mat-icon>search</mat-icon></button>
+      </div>
+      <div style="flex-grow: 1; align-self: flex-start;" class="flex-container flex-layout-row ">
+        <button mat-icon-button matTooltip="Add additional query input" (click)="addInputBox()" ><mat-icon>add_circle_outline</mat-icon></button>
+        <button mat-icon-button matTooltip="Remove additional query input" (click)="removeInputBox()" ><mat-icon>remove_circle_outline</mat-icon></button>
+        <button mat-icon-button matTooltip="Start the query" (keydown.enter)="startSearch()" (click)="startSearch()" ><mat-icon>search</mat-icon></button>
+      </div>
     </mat-toolbar-row>
 
 </mat-toolbar>

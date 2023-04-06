@@ -1,6 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { QueryService } from './../query/query.service';
-import { Component, NgModule } from '@angular/core';
+import {Component, HostListener, NgModule} from '@angular/core';
+import {Settings} from "../settings.model";
 
 
 @Component({
@@ -40,4 +41,7 @@ export class TopBarComponent {
     return this.queryService.inputs;
   }
 
+  calcHeight() {
+    return `${Settings.queryCategories.length * 64}px`
+  }
 }
