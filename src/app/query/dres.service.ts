@@ -10,16 +10,9 @@ export class DresService{
 
   }
 
-  public submit(segment: MediaSegmentDescriptor){
-    if(!segment){
-      console.error("Cannot submit a falsy segment!")
-      return;
-    }
-
-    const timecode = DresService.toTimecode(((segment.startabs || 0) + (segment.endabs || 0)) / 2)
+  public submitByTime(id: string, seconds: number){
+    const timecode = DresService.toTimecode(seconds)
     console.log("[DresService] Timecode: ", timecode);
-
-    const id = segment?.objectId?.replace(/v_/, '') ?? 'n/a';
     console.log("[DresService] Id: ", id);
 
     this.submissionService.getApiV1Submit(
@@ -30,11 +23,20 @@ export class DresService{
       undefined,
       timecode
     ).subscribe((result) => {
-        if(this.resultHandler){
-          this.resultHandler(result);
-        }
-        console.log('[DresService] Submission result: ', result);
+      if(this.resultHandler){
+        this.resultHandler(result);
+      }
+      console.log('[DresService] Submission result: ', result);
     })
+  }
+
+  public submit(segment: MediaSegmentDescriptor){
+    if(!segment){
+      console.error("Cannot submit a falsy segment!")
+      return;
+    }
+
+    this.submitByTime(segment?.objectId?.replace(/v_/, '') ?? 'n/a', ((segment.startabs || 0) + (segment.endabs || 0)) / 2)
   }
 
   private static toTimecode(seconds: number):string{
