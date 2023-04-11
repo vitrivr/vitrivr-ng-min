@@ -6,9 +6,9 @@ export class Settings {
    * Expects that objectBasePath/<objectId> serves the video
    */
   public static readonly objectBasePath = 'http://localhost:8080/objects/';
-  public static readonly moreLikeThisCategory = 'clip';
+  public static readonly moreLikeThisCategory = 'cliptext';
   public static readonly queryCategories = [
-    ['clip', 'Clip'], ['visualtextcoembedding', 'Co-Embedding']
+    ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
   public static readonly dresBaseApi = "https://dmi-dres.dmi.unibas.ch"
 

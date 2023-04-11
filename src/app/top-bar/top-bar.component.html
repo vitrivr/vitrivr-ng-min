@@ -8,7 +8,9 @@
     <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start" [style.height]="calcHeight()">
       <div style="flex-basis: auto;" class="flex-container flex-layout-row ">
         <div *ngFor="let form of inputs; index as i" class="flex-container flex-layout-row flex-align-center">
-          <div *ngIf="i > 0"><mat-icon>keyboard_arrow_right</mat-icon></div>
+          <div *ngIf="i > 0" style="padding: 0 1rem;">
+            <mat-icon>keyboard_double_arrow_right</mat-icon>
+          </div>
           <app-query-text-input [controls]="form"></app-query-text-input>
         </div>
       </div>
