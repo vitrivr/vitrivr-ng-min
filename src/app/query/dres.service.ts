@@ -1,12 +1,41 @@
 import {Injectable} from "@angular/core";
-import {SubmissionService, SuccessfulSubmissionsStatus} from "../../../openapi/dres";
+import {LoginRequest, SubmissionService, SuccessfulSubmissionsStatus, UserService} from "../../../openapi/dres";
 import {MediaSegmentDescriptor} from "../../../openapi/cineast";
+import {Settings} from "../settings.model";
 
 @Injectable()
 export class DresService{
 
   public resultHandler: ((status: SuccessfulSubmissionsStatus) => void) | undefined;
-  constructor(private submissionService: SubmissionService) {
+
+  private token = ''
+
+  constructor(private submissionService: SubmissionService, private userService: UserService) {
+
+    if (Settings.dresUser.trim().length > 0) {
+      userService.getApiV1User().subscribe({
+        error: err => {
+          console.log('[DresService] no active session, trying to log in')
+          userService.postApiV1Login({
+            username: Settings.dresUser,
+            password: Settings.dresPassword
+          } as LoginRequest).subscribe({
+            error: err1 => {
+              console.log('could not log in', err1)
+            },
+            next: value => {
+              console.log('[DresService] login successful for user', value.username)
+              console.log('[DresService] got session token', value.sessionId)
+              this.token = value.sessionId!!;
+            }
+          });
+        },
+        next: value => {
+          console.log('[DresService] got session token', value.sessionId)
+          this.token = value.sessionId!!;
+        }
+      });
+    }
 
   }
 
@@ -21,7 +50,8 @@ export class DresService{
       undefined,
       undefined,
       undefined,
-      timecode
+      timecode,
+      this.token
     ).subscribe((result) => {
       if(this.resultHandler){
         this.resultHandler(result);

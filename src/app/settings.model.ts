@@ -11,5 +11,7 @@ export class Settings {
     ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
   public static readonly dresBaseApi = "https://dmi-dres.dmi.unibas.ch"
+  public static readonly dresUser = ''
+  public static readonly dresPassword = ''
 
 }

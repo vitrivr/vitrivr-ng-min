@@ -1,5 +1,5 @@
 import { Settings } from './settings.model';
-import { ApiModule } from './../../openapi/cineast/api.module';
+import { ApiModule } from '../../openapi/cineast';
 import { ApiModule as DresApi} from 'openapi/dres/api.module';
 import { QueryService } from './query/query.service';
 import { NgModule } from '@angular/core';
