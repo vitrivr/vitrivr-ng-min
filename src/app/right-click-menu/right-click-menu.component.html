@@ -1,0 +1,18 @@
+<!-- we generate a number of items dinamically-->
+<div class="contextmenu">
+  <!-- when the user clicks on the div the onRightClick event is called, we pass a simple object-->
+  <div (click)="onRightClick($event, {content: 'Item '})" style="padding-bottom: 20px;">
+    Test
+  </div>
+</div>
+
+<!-- an hidden div is created to set the position of appearance of the menu-->
+<div style="visibility: hidden; position: fixed;" [style.left]="menuTopLeftPosition.x"
+  [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="rightMenu"></div>
+
+<!-- standard material menu -->
+<mat-menu  #rightMenu="matMenu">
+  <ng-template matMenuContent let-item="item">
+    <button *ngFor="let menuEvent in menuEvents" mat-menu-item (click)=menuEvent>{{menuEvent[menuEvent]}}</button>
+  </ng-template>
+</mat-menu>
