@@ -1,8 +1,14 @@
 import { FormControl } from '@angular/forms';
 import { QueryService } from './../query/query.service';
-import {Component, HostListener, NgModule, Directive, Input, ViewChild} from '@angular/core';
-import {Settings} from "../settings.model";
-import {MatMenuTrigger} from '@angular/material/menu';
+import { Component, HostListener, NgModule, Directive, Input, ViewChild } from '@angular/core';
+import { Settings } from "../settings.model";
+import { MatMenuTrigger } from '@angular/material/menu';
+import { LogService, QueryEventLog } from 'openapi/dres';
+
+
+export interface MenuEventEntry {
+  text: string, action: () => void, key?: string
+}
 
 
 @Component({
@@ -15,35 +21,56 @@ export class RightClickMenuComponent {
   constructor(public queryService: QueryService) {
 
   }
-  
-  @Input() menuEvents: Record<string, void> = {};
-  @Input() autoPerformeFirst: Boolean = false;
+
+  @Input() menuEvents !: MenuEventEntry[];
+  @Input() showMenu: Boolean = true;
+
+  public resolveByMenuItemText(index: number, item: MenuEventEntry) {
+    return item.text
+  }
 
   // coordinates 
-  menuTopLeftPosition =  {x: '0', y: '0'}
- 
+  menuTopLeftPosition = { x: '0', y: '0' }
+
   // reference to the MatMenuTrigger in the DOM 
   @ViewChild(MatMenuTrigger, { static: true })
-    matMenuTrigger!: MatMenuTrigger;
- 
-  /** 
-   * Method called when the user click with the right button 
-   * @param event MouseEvent, it contains the coordinates 
-   * @param item Our data contained in the row of the table 
-   */ 
-  onRightClick(event: MouseEvent, item: any) { 
-      // preventDefault avoids to show the visualization of the right-click menu of the browser 
-      event.preventDefault(); 
- 
-      // we record the mouse position in our object 
-      this.menuTopLeftPosition.x = event.clientX + 'px'; 
-      this.menuTopLeftPosition.y = event.clientY + 'px'; 
- 
-      // we open the menu 
-      // we pass to the menu the information about our object 
-      //this.matMenuTrigger.menuData = {item: item} 
- 
-      // we open the menu 
-      this.matMenuTrigger.openMenu(); 
-  } 
+  matMenuTrigger!: MatMenuTrigger;
+
+
+  onRightClick(event: MouseEvent, item: any) {
+    // preventDefault avoids to show the visualization of the right-click menu of the browser 
+    event.preventDefault();
+    let actionPerformed = true
+
+    for (let menuEvent of this.menuEvents) {
+      if (menuEvent.key) {
+        switch (menuEvent.key) {
+          case "ctrl": {
+            if (event.ctrlKey) { menuEvent.action() }
+            break;
+          }
+          case "shift": {
+            if (event.shiftKey) { menuEvent.action() }
+            break;
+          }
+          case "alt": {
+            if (event.altKey) { menuEvent.action() }
+            break;
+          }
+          default: {
+            actionPerformed = false
+            break;
+          }
+        }
+      }
+    }
+
+    if (this.showMenu && !actionPerformed) {
+      // mouse position for menu
+      this.menuTopLeftPosition.x = event.clientX + 'px';
+      this.menuTopLeftPosition.y = event.clientY + 'px';
+      // show menu
+      this.matMenuTrigger.openMenu();
+    }
+  }
 }
