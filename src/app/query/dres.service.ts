@@ -78,6 +78,10 @@ export class DresService {
 
   public logResults(result: QueryResult, terms: Map<string, string>) {
 
+    if (this.token.length == 0) { //only send logs when logged in
+      return
+    }
+
     if (result.objects.length == 0) {
       return
     }
