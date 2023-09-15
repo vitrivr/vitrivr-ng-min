@@ -1,8 +1,15 @@
 <div [style.background-color]="color" class="tile">
-    <img src="{{base}}{{scoredSegment.id}}" class="previewImage" (click)="show(scoredSegment.id)"/>
+    <app-context-click #contextmenu [showMenu]=false [menuEvents]='[
+        {"text": "More like this",  "action": getMoreLikeThisCallback(scoredSegment.id), "key": "shift"},
+        {"text": "Submit to competition", "action": getSubmitCallback(scoredSegment.id), "key": "ctrl"}]'>
+    </app-context-click>
+
+    <img src="{{base}}{{scoredSegment.id}}" class="previewImage" (click)="show(scoredSegment.id)"
+        (contextmenu)="contextMenuCallback($event, {})" />
     <div class="footer">
-        <button mat-mini-fab color="primary" matTooltip="More like this" (click)="moreLikeThis(scoredSegment.id)"><mat-icon>youtube_searched_for</mat-icon></button>
-        <button mat-mini-fab color="primary" matTooltip="Submit to competition" (click)="submit(scoredSegment.id)"><mat-icon>send</mat-icon></button>
+        <button mat-mini-fab color="primary" matTooltip="More like this"
+            (click)="moreLikeThis(scoredSegment.id)"><mat-icon>youtube_searched_for</mat-icon></button>
+        <button mat-mini-fab color="primary" matTooltip="Submit to competition"
+            (click)="submit(scoredSegment.id)"><mat-icon>send</mat-icon></button>
     </div>
 </div>
-
