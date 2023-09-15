@@ -1,0 +1,13 @@
+
+<!-- an hidden div is created to set the position of appearance of the menu-->
+<div style="visibility: hidden; position: fixed;" [style.left]="menuTopLeftPosition.x"
+  [style.top]="menuTopLeftPosition.y" [matMenuTriggerFor]="rightMenu"></div>
+
+<!-- standard material menu -->
+<mat-menu #rightMenu="matMenu">
+  <li *ngFor="let menuEvent of menuEvents; trackBy:resolveByMenuItemText" >
+    <button mat-menu-item (click)="menuEvent.action()">
+      {{menuEvent.text}}
+    </button>
+  </li>
+</mat-menu>

@@ -15,6 +15,7 @@ export class DresService {
 
   public resultHandler: ((status: SuccessfulSubmissionsStatus) => void) | undefined;
 
+  // Dres Authentification for each ...
   private token = ''
 
   constructor(private submissionService: SubmissionService, private userService: UserService, private logService: LogService) {
