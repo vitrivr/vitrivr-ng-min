@@ -8,7 +8,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
-import { RightClickMenuComponent } from './right-click-menu/right-click-menu.component';
+import { ContextClickComponent } from './context-click/context-click.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -38,7 +38,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     TopBarComponent,
     ResultDisplayComponent,
     ResultTileComponent,
-    RightClickMenuComponent,
+    ContextClickComponent,
     ResultDialogComponent,
     QueryTextInputComponent,
   ],

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RightClickMenuComponent } from './right-click-menu.component';
+import { ContextClickComponent } from './context-click.component';
 
-describe('RightClickMenuComponent', () => {
-  let component: RightClickMenuComponent;
-  let fixture: ComponentFixture<RightClickMenuComponent>;
+describe('ContextClickComponent', () => {
+  let component: ContextClickComponent;
+  let fixture: ComponentFixture<ContextClickComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RightClickMenuComponent ]
+      declarations: [ ContextClickComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RightClickMenuComponent);
+    fixture = TestBed.createComponent(ContextClickComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

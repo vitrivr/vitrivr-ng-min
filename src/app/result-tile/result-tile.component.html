@@ -1,8 +1,8 @@
 <div [style.background-color]="color" class="tile">
-    <app-right-click-menu #contextmenu [showMenu]=false [menuEvents]='[
+    <app-context-click #contextmenu [showMenu]=false [menuEvents]='[
         {"text": "More like this",  "action": getMoreLikeThisCallback(scoredSegment.id), "key": "shift"},
-        {"text": "Submit to competition", "action": getSubmitCallback(scoredSegment.id), "key": "ctrl"}]'>        
-    </app-right-click-menu>
+        {"text": "Submit to competition", "action": getSubmitCallback(scoredSegment.id), "key": "ctrl"}]'>
+    </app-context-click>
 
     <img src="{{base}}{{scoredSegment.id}}" class="previewImage" (click)="show(scoredSegment.id)"
         (contextmenu)="contextMenuCallback($event, {})" />

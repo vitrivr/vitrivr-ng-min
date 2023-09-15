@@ -7,7 +7,7 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { SubmissionService } from "../../../openapi/dres";
 import { DresService } from "../query/dres.service";
-import { RightClickMenuComponent } from '../right-click-menu/right-click-menu.component';
+import { ContextClickComponent } from '../context-click/context-click.component';
 
 @Component({
   selector: 'app-result-tile',
@@ -24,12 +24,12 @@ export class ResultTileComponent implements AfterViewInit{
   }
 
   ngAfterViewInit(): void {
-    
+
   }
 
-  // reference to the MatMenuTrigger in the DOM 
+  // reference to the MatMenuTrigger in the DOM
   @ViewChild('contextmenu', { static: true })
-  rightClickMenuComponent!: RightClickMenuComponent;
+  contextClickComponent!: ContextClickComponent;
 
 
   @Input()
@@ -63,7 +63,7 @@ export class ResultTileComponent implements AfterViewInit{
   }
 
   public contextMenuCallback(event: MouseEvent, item: any) {
-    this.rightClickMenuComponent.onRightClick(event, item);
+    this.contextClickComponent.onRightClick(event, item);
   }
 
   public submit(segmentId: string) {
