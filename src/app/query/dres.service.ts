@@ -100,8 +100,8 @@ export class DresService {
 
     for (const term of terms) {
       events.push({
-        type: QueryEvent.CategoryEnum.TEXT,
-        category: term[0],
+        type:  term[0],
+        category: QueryEvent.CategoryEnum.TEXT,
         value: term[1],
         timestamp: Date.now()
       } as QueryEvent);
