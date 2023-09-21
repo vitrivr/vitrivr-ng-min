@@ -10,8 +10,8 @@ export class Settings {
   public static readonly queryCategories = [
     ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
-  public static readonly dresBaseApi = "https://dmi-dres.dmi.unibas.ch"
-  public static readonly dresUser = 'raphi-user-1'
-  public static readonly dresPassword = 'Susanna99'
+  public static readonly dresBaseApi = "https://vbs.videobrowsing.org"
+  public static readonly dresUser = 'vitrivr4b'
+  public static readonly dresPassword = 'PYDmvy3bR86dJTUYAMnG'
 
 }

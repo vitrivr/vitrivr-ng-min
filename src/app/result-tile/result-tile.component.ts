@@ -5,6 +5,7 @@ import { QueryService } from './../query/query.service';
 import { Settings } from './../settings.model';
 import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar} from '@angular/material/snack-bar';
 import { SubmissionService } from "../../../openapi/dres";
 import { DresService } from "../query/dres.service";
 import { ContextClickComponent } from '../context-click/context-click.component';
@@ -19,7 +20,8 @@ export class ResultTileComponent implements AfterViewInit{
   constructor(
     private queryService: QueryService,
     private dresService: DresService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -71,8 +73,11 @@ export class ResultTileComponent implements AfterViewInit{
     const segment = this.queryService.mediaSegment(segmentId);
     if (segment) {
       this.dresService.submit(segment);
+      // Simple message.
+      let snackBarRef = this.snackBar.open(segmentId + " submitted successfully")
     } else {
       console.log('Couldnt submit due to no segment being present')
+      let snackBarRef = this.snackBar.open(segmentId + "Couldnt submit due to no segment being present")
     }
 
   }
