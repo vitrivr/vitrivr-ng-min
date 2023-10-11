@@ -87,13 +87,17 @@ export class DresService {
       return
     }
 
-    const queryResults = result.objects.flatMap((value, index) => {
-      return {
-        item: value.id,
-        score: value.score,
-        rank: index
+    let rankCounter = 1;
 
-      } as DresQueryResult;
+    const queryResults = result.objects.flatMap((scoredObject, objectIndex) => {
+      return scoredObject.segments.map((segment, segmentIndex) => {
+        return {
+          item: segment.id,
+          score: segment.score,
+          rank: rankCounter++
+        } as DresQueryResult;
+      });
+
     }) || [];
 
     let events = new Array<QueryEvent>();
