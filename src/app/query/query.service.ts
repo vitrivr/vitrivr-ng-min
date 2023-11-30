@@ -1,33 +1,44 @@
 import { FormControl } from '@angular/forms';
-import { Settings } from './../settings.model';
-import { StringDoublePair } from './../../../openapi/cineast/model/stringDoublePair';
-import { SimilarityQueryResult } from './../../../openapi/cineast/model/similarityQueryResult';
-import { SimilarityQuery } from './../../../openapi/cineast/model/similarityQuery';
-import { ObjectService } from './../../../openapi/cineast/api/object.service';
-import { MediaObjectDescriptor } from './../../../openapi/cineast/model/mediaObjectDescriptor';
-import { MediaSegmentDescriptor } from './../../../openapi/cineast/model/mediaSegmentDescriptor';
-import { IdList } from './../../../openapi/cineast/model/idList';
+import { Settings } from '../settings.model';
+import { StringDoublePair } from '../../../openapi/cineast';
+import { SimilarityQueryResult } from '../../../openapi/cineast';
+import { SimilarityQuery } from '../../../openapi/cineast';
+import { ObjectService } from '../../../openapi/cineast';
+import { MediaObjectDescriptor } from '../../../openapi/cineast';
+import { MediaSegmentDescriptor } from '../../../openapi/cineast';
+import { IdList } from '../../../openapi/cineast';
 import { ScoredSegment } from './scored-segment.model';
 import { ScoredObject } from './scored-object.model';
 import { QueryResult } from './query-result.model';
-import { QueryTerm } from './../../../openapi/cineast/model/queryTerm';
-import { TemporalQueryResult } from './../../../openapi/cineast/model/temporalQueryResult';
+import { QueryTerm } from '../../../openapi/cineast';
 import { Injectable } from '@angular/core';
-import { SegmentService, SegmentsService, TemporalQuery, QueryStage, StagedSimilarityQuery, TemporalObject } from 'openapi/cineast';
-import { BehaviorSubject, map } from 'rxjs';
+import { SegmentService, SegmentsService, TemporalQuery, StagedSimilarityQuery, TemporalObject } from 'openapi/cineast';
+import { BehaviorSubject } from 'rxjs';
+import {DresService} from "./dres.service";
 
 @Injectable()
 export class QueryService {
 
-    public inputs = new Array<Map<string, FormControl>>();
+  public inputs = new Array<Map<string, FormControl>>();
+
+  public queryRunning = new BehaviorSubject<Boolean>(false);
+  public lastQueryResult = new BehaviorSubject<QueryResult>(new QueryResult([]));
+
+  private mediaSegments = new Map<string, MediaSegmentDescriptor>()
+  private mediaObjects = new Map<string, MediaObjectDescriptor>()
+
+  private lastInputs = new BehaviorSubject<Map<string, string>>(new Map());
 
     public constructor(
         private segmentsService: SegmentsService,
         private segmentService: SegmentService,
-        private objectService: ObjectService
+        private objectService: ObjectService,
+        private dresService: DresService
     ) {
 
         this.addInput();
+
+        this.lastQueryResult.subscribe(result => this.dresService.logResults(result, this.lastInputs.getValue()))
 
     }
 
@@ -48,12 +59,6 @@ export class QueryService {
         }
     }
 
-    public queryRunning = new BehaviorSubject<Boolean>(false);
-    public lastQueryResult = new BehaviorSubject<QueryResult | null>(null);
-
-    private mediaSegments = new Map<string, MediaSegmentDescriptor>()
-    private mediaObjects = new Map<string, MediaObjectDescriptor>()
-
 
     public mediaSegment(segmentId: string): MediaSegmentDescriptor | null {
       return this.mediaSegments.get(segmentId) || null;
@@ -67,6 +72,9 @@ export class QueryService {
         }
 
         let queries = new Array<StagedSimilarityQuery>();
+
+        let i = 0;
+        let termsMap = new Map<string, string>();
 
         for (let input of this.inputs) {
             let terms = new Array<QueryTerm>();
@@ -85,6 +93,8 @@ export class QueryService {
                     } as QueryTerm
                 );
 
+                termsMap.set(key + i, value.value);
+
             }
 
             if (terms.length > 0) {
@@ -99,7 +109,7 @@ export class QueryService {
                     } as StagedSimilarityQuery
                 )
             }
-
+          ++i;
         }
 
         if (queries.length == 0) {
@@ -109,6 +119,8 @@ export class QueryService {
         let query = {
             queries: queries
         } as TemporalQuery;
+
+        this.lastInputs.next(termsMap);
 
         console.log('starting query');
 

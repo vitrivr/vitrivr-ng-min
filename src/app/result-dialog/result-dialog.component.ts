@@ -83,4 +83,4 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
   }
 
 
-} // a bride in a white dress
+}

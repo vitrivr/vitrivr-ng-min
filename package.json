@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "gen-cineast-api": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/vitrivr/cineast/main/docs/openapi.json -o openapi/cineast --skip-validate-spec --additional-properties npmName=@cineast-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original",
-    "gen-dres-client": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/master/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original"
+    "gen-dres-client": "openapi-generator-cli generate -g typescript-angular -i https://raw.githubusercontent.com/dres-dev/DRES/v1.3.0/doc/oas-client.json -o openapi/dres --skip-validate-spec --additional-properties npmName=@dres-client-openapi/api,ngVersion=13.0.0,enumPropertyNaming=original"
   },
   "private": true,
   "dependencies": {

@@ -30,6 +30,7 @@ import { ResultDialogComponent } from './result-dialog/result-dialog.component';
 import { QueryTextInputComponent } from './query-text-input/query-text-input.component';
 import { DresService } from "./query/dres.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
+import { MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 @NgModule({
@@ -40,7 +41,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     ResultTileComponent,
     ContextClickComponent,
     ResultDialogComponent,
-    QueryTextInputComponent,
+    QueryTextInputComponent
   ],
   imports: [
     BrowserModule,
@@ -49,6 +50,7 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     BrowserAnimationsModule,
     MatIconModule,
     MatToolbarModule,
+    MatSnackBarModule,
     MatButtonModule,
     MatProgressBarModule,
     MatDialogModule,

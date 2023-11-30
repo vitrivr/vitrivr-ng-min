@@ -1,7 +1,7 @@
 export class Settings {
 
-  public static readonly cineastBasePath = 'https://min.vitrivr.tech';
-  public static readonly thumbnailBasePath = 'https://min.vitrivr.tech/thumbnails/';
+  public static readonly cineastBasePath = 'http://localhost:1865';
+  public static readonly thumbnailBasePath = 'C:\\Users\\walten0000\\Documents\\myRepo\\ch.unibas\\Work\\archipanion-local-rescources\\thumbnails';
   /**
    * Expects that objectBasePath/<objectId> serves the video
    */
@@ -10,8 +10,8 @@ export class Settings {
   public static readonly queryCategories = [
     ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
-  public static readonly dresBaseApi = "https://dmi-dres.dmi.unibas.ch"
-  public static readonly dresUser = ''
-  public static readonly dresPassword = ''
+  public static readonly dresBaseApi = "https://vbs.videobrowsing.org"
+  public static readonly dresUser = 'vitrivr4b'
+  public static readonly dresPassword = 'PYDmvy3bR86dJTUYAMnG'
 
 }
