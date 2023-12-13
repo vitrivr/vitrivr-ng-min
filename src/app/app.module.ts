@@ -1,5 +1,6 @@
 import { Settings } from './settings.model';
 import { ApiModule } from '../../openapi/cineast';
+import { ApiModule as EngineModule} from '../../openapi/engine';
 import { ApiModule as DresApi } from 'openapi/dres/api.module';
 import { QueryService } from './query/query.service';
 import { NgModule } from '@angular/core';
@@ -21,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { Configuration } from 'openapi/cineast';
+import { Configuration as EngineConfiguration } from 'openapi/engine';
 import { Configuration as DresConfig } from 'openapi/dres';
 import { HttpClientModule } from '@angular/common/http';
 import { ResultDisplayComponent } from './result-display/result-display.component';
@@ -31,6 +33,7 @@ import { QueryTextInputComponent } from './query-text-input/query-text-input.com
 import { DresService } from "./query/dres.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
+import {from} from "rxjs";
 
 
 @NgModule({
@@ -73,6 +76,13 @@ import { MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
           basePath: Settings.dresBaseApi, withCredentials: true
         });
       }
+    ),
+    EngineModule.forRoot(
+        () => {
+          return new EngineConfiguration({
+            basePath: Settings.engineBasePath
+          });
+        }
     ),
     MatTooltipModule,
   ],

@@ -1,6 +1,7 @@
 export class Settings {
 
   public static readonly cineastBasePath = 'http://localhost:1865';
+  public static readonly engineBasePath = 'http://localhost:7070';
   public static readonly thumbnailBasePath = 'C:\\Users\\walten0000\\Documents\\myRepo\\ch.unibas\\Work\\archipanion-local-rescources\\thumbnails';
   /**
    * Expects that objectBasePath/<objectId> serves the video
