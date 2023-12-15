@@ -34,6 +34,7 @@ import { DresService } from "./query/dres.service";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatSnackBar, MatSnackBarModule} from '@angular/material/snack-bar';
 import {from} from "rxjs";
+import {MatSelectModule} from "@angular/material/select";
 
 
 @NgModule({
@@ -46,46 +47,48 @@ import {from} from "rxjs";
     ResultDialogComponent,
     QueryTextInputComponent
   ],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatSnackBarModule,
-    MatButtonModule,
-    MatProgressBarModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatMenuModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    ApiModule.forRoot(
-      () => {
-        return new Configuration({
-          basePath: Settings.cineastBasePath
-        });
-      }
-    ),
-    DresApi.forRoot(
-      () => {
-        return new DresConfig({
-          basePath: Settings.dresBaseApi, withCredentials: true
-        });
-      }
-    ),
-    EngineModule.forRoot(
-        () => {
-          return new EngineConfiguration({
-            basePath: Settings.engineBasePath
-          });
-        }
-    ),
-    MatTooltipModule,
-  ],
+    imports: [
+        BrowserModule,
+        CommonModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatIconModule,
+        MatToolbarModule,
+        MatSnackBarModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatProgressBarModule,
+        MatDialogModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatMenuModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        ApiModule.forRoot(
+            () => {
+                return new Configuration({
+                    basePath: Settings.cineastBasePath
+                });
+            }
+        ),
+        DresApi.forRoot(
+            () => {
+                return new DresConfig({
+                    basePath: Settings.dresBaseApi, withCredentials: true
+                });
+            }
+        ),
+        EngineModule.forRoot(
+            () => {
+                return new EngineConfiguration({
+                    basePath: Settings.engineBasePath
+                });
+            }
+        ),
+        MatTooltipModule,
+        MatSelectModule,
+    ],
   providers: [
     QueryService,
     DresService

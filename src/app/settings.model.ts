@@ -2,7 +2,13 @@ export class Settings {
 
   public static readonly cineastBasePath = 'http://localhost:1865';
   public static readonly engineBasePath = 'http://localhost:7070';
-  public static readonly thumbnailBasePath = 'C:\\Users\\walten0000\\Documents\\myRepo\\ch.unibas\\Work\\archipanion-local-rescources\\thumbnails';
+
+  // path to the thumbnails, selected schema is added automatically to the path
+  public static readonly thumbnailBasePath = 'D:/data/thumbnails/';
+  public static readonly schemas = [
+    'MVK', 'V3C', 'VBSLHE'
+  ];
+
   /**
    * Expects that objectBasePath/<objectId> serves the video
    */

@@ -1,24 +1,48 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
-        <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button ><mat-icon>keyboard_arrow_{{showQueryPane ? 'up' : 'down'}}</mat-icon>
-        <img src="../assets/images/vitrivr_logo.png"> minimal
-    </button>
+        <div>
+            <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button>
+                <mat-icon>keyboard_arrow_{{showQueryPane ? 'up' : 'down'}}</mat-icon>
+                <img src="../assets/images/vitrivr_logo.png"> minimal
+            </button>
+        </div>
+        <div>
+            Schema: {{selectedSchema}}
+            <mat-form-field>
+                <mat-select placeholder="Running on  schema" [(ngModel)]="selectedSchema" name="food">
+                    <mat-option *ngFor="let schema of schemas" [value]="schema">
+                        {{schema}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <span class="flexExpand"></span>
+
+
     </mat-toolbar-row>
 
-    <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start" [style.height]="calcHeight()">
-      <div style="flex-basis: auto;" class="flex-container flex-layout-row ">
-        <div *ngFor="let form of inputs; index as i" class="flex-container flex-layout-row flex-align-center">
-          <div *ngIf="i > 0" style="padding: 0 1rem;">
-            <mat-icon>keyboard_double_arrow_right</mat-icon>
-          </div>
-          <app-query-text-input [controls]="form"></app-query-text-input>
+    <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start"
+                     [style.height]="calcHeight()">
+        <div style="flex-basis: auto;" class="flex-container flex-layout-row ">
+            <div *ngFor="let form of inputs; index as i" class="flex-container flex-layout-row flex-align-center">
+                <div *ngIf="i > 0" style="padding: 0 1rem;">
+                    <mat-icon>keyboard_double_arrow_right</mat-icon>
+                </div>
+                <app-query-text-input [controls]="form"></app-query-text-input>
+            </div>
         </div>
-      </div>
-      <div style="flex-grow: 1; align-self: flex-start;" class="flex-container flex-layout-row ">
-        <button mat-icon-button matTooltip="Add additional query input" (click)="addInputBox()" ><mat-icon>add_circle_outline</mat-icon></button>
-        <button mat-icon-button matTooltip="Remove additional query input" (click)="removeInputBox()" ><mat-icon>remove_circle_outline</mat-icon></button>
-        <button mat-icon-button color="accent" matTooltip="Start the query" (click)="startSearch()" ><mat-icon>search</mat-icon></button>
-      </div>
+        <div style="flex-grow: 1; align-self: flex-start;" class="flex-container flex-layout-row ">
+            <button mat-icon-button matTooltip="Add additional query input" (click)="addInputBox()">
+                <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Remove additional query input" (click)="removeInputBox()">
+                <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" matTooltip="Start the query" (click)="startSearch()">
+                <mat-icon>search</mat-icon>
+            </button>
+        </div>
+
     </mat-toolbar-row>
 
 </mat-toolbar>

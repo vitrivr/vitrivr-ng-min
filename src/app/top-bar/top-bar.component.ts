@@ -2,12 +2,16 @@ import { FormControl } from '@angular/forms';
 import { QueryService } from './../query/query.service';
 import {Component, HostListener, NgModule} from '@angular/core';
 import {Settings} from "../settings.model";
+import {FormsModule} from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 
 @Component({
   selector: 'app-top-bar',
   templateUrl: './top-bar.component.html',
-  styleUrls: ['./top-bar.component.scss']
+  styleUrls: ['./top-bar.component.scss'],
 })
 export class TopBarComponent {
 
@@ -16,6 +20,9 @@ export class TopBarComponent {
   }
 
   public showQueryPane: Boolean = true;
+  public schemas: string[] = Settings.schemas;
+  public selectedSchema: string = this.schemas[0];
+
 
   public queryRunning = this.queryService.queryRunning.asObservable();
 
@@ -29,6 +36,7 @@ export class TopBarComponent {
   }
 
   private _lastEnter: number = 0;
+
 
   @HostListener('window:keyup', ['$event'])
   public keyEvent(event: KeyboardEvent){

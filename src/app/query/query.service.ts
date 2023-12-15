@@ -1,18 +1,9 @@
 import {FormControl} from '@angular/forms';
 import {Settings} from '../settings.model';
-import {StringDoublePair} from '../../../openapi/cineast';
-import {SimilarityQueryResult} from '../../../openapi/cineast';
-import {SimilarityQuery} from '../../../openapi/cineast';
-import {ObjectService} from '../../../openapi/cineast';
-import {MediaObjectDescriptor} from '../../../openapi/cineast';
-import {MediaSegmentDescriptor} from '../../../openapi/cineast';
-import {IdList} from '../../../openapi/cineast';
 import {ScoredSegment} from './scored-segment.model';
 import {ScoredObject} from './scored-object.model';
 import {QueryResult} from './query-result.model';
-import {QueryTerm} from '../../../openapi/cineast';
 import {Injectable} from '@angular/core';
-import {SegmentService, SegmentsService, TemporalQuery, StagedSimilarityQuery, TemporalObject} from 'openapi/cineast';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {DresService} from "./dres.service";
 import {
@@ -23,6 +14,8 @@ import {
     RetrievalService
 } from "../../../openapi/engine";
 import {HttpContext, HttpContextToken} from "@angular/common/http";
+import {MediaObjectModel} from "./model/MediaObjectModel";
+import {MediaSegmentModel} from "./model/MediaSegmentModel";
 
 @Injectable()
 export class QueryService {
@@ -32,16 +25,13 @@ export class QueryService {
     public queryRunning = new BehaviorSubject<Boolean>(false);
     public lastQueryResult = new BehaviorSubject<QueryResult>(new QueryResult([]));
 
-    private mediaSegments = new Map<string, MediaSegmentDescriptor>()
-    private mediaObjects = new Map<string, MediaObjectDescriptor>()
+    private mediaSegments = new Map<string, MediaSegmentModel>()
+    private mediaObjects = new Map<string, MediaObjectModel>()
 
     private lastInputs = new BehaviorSubject<Map<string, string>>(new Map());
 
     public constructor(
         private retrievalService: RetrievalService,
-        private segmentsService: SegmentsService,
-        private segmentService: SegmentService,
-        private objectService: ObjectService,
         private dresService: DresService
     ) {
 
@@ -69,7 +59,7 @@ export class QueryService {
     }
 
 
-    public mediaSegment(segmentId: string): MediaSegmentDescriptor | null {
+    public mediaSegment(segmentId: string): MediaSegmentModel | null {
         return this.mediaSegments.get(segmentId) || null;
     }
 
@@ -80,82 +70,62 @@ export class QueryService {
             return;
         }
 
-        let queries = new Array<StagedSimilarityQuery>();
 
-        let i = 0;
+        let ic = 0;
         let termsMap = new Map<string, string>();
 
         for (let input of this.inputs) {
-            let terms = new Array<QueryTerm>();
-
             for (let [key, value] of input) {
-
                 if (value.value == null) {
                     continue;
                 }
-
-                terms.push(
-                    {
-                        categories: [key],
-                        data: value.value,
-                        type: 'TEXT'
-                    } as QueryTerm
-                );
-
-                termsMap.set(key + i, value.value);
-
+                termsMap.set(key + ic, value.value);
             }
-
-            if (terms.length > 0) {
-                queries.push(
-                    {
-                        stages: [
-                            {
-                                terms: terms
-                            }
-                        ]
-
-                    } as StagedSimilarityQuery
-                )
-            }
-            ++i;
+            ++ic;
         }
-
-        if (queries.length == 0) {
-            return;
-        }
-
-        let query = {
-            queries: queries
-        } as TemporalQuery;
 
         this.lastInputs.next(termsMap);
-
         console.log('starting query');
 
         this.queryRunning.next(true);
         this.lastQueryResult.next(new QueryResult([])); //reset display
 
         // @ts-ignore
-        let text = query.queries.at(0)?.stages.at(0)?.terms.at(0)?.data || "";
+        let text = termsMap.get("CLIP") || "";
         let informationNeedDescription =
             {
                 "inputs": {
-                    "mytext": {"type": "TEXT", "data": `${ text }`}
+                    "mytext": {"type": "TEXT", "data": `${text}`}
                 },
                 "operations": {
-                    "clip" : {"type": "RETRIEVER", "field": "clip", "input": "mytext"},
-                    "relations" : {"type": "TRANSFORMER", "transformerName": "RelationExpander", "input": "clip", "properties": {"outgoing": "partOf"}},
-                    "lookup" : {"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": "relations", "properties": {"field": "time", "keys": "start, end"}},
-                    "aggregator" : {"type": "TRANSFORMER", "transformerName": "ScoreAggregator",  "input": "lookup"}
+                    "clip": {"type": "RETRIEVER", "field": "clip", "input": "mytext"},
+                    "relations": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "RelationExpander",
+                        "input": "clip",
+                        "properties": {"outgoing": "partOf"}
+                    },
+                    "lookup": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "FieldLookup",
+                        "input": "relations",
+                        "properties": {"field": "time", "keys": "start, end"}
+                    },
+                    "aggregator": {"type": "TRANSFORMER", "transformerName": "ScoreAggregator", "input": "lookup"},
+                    "lookup2": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "FieldLookup",
+                        "input": "aggregator",
+                        "properties": {"field": "file", "keys": "path"}
+                    }
                 },
                 "context": {
                     "global": {
                         "limit": "100"
                     },
-                    "local" : {}
+                    "local": {}
                 },
-                "output": "aggregator"
+                "output": "lookup2"
             } as InformationNeedDescription;
 
         this.retrievalService.postExecuteQuery("MVK", informationNeedDescription, 'body', false, {
@@ -167,322 +137,65 @@ export class QueryService {
                     this.queryRunning.next(false);
                 },
                 next: (result) => {
-
                     if (result.retrievables !== undefined) {
+                        // Parse all segments and add to map
                         let content = result.retrievables as Array<QueryResultRetrievable>;
-                        let queryResult = new QueryResult(
-                            content.map(
-                                res => new ScoredObject(
-                                    res.id || "n/a",
-                                    (res.parts || new Array<string>()).map(
-                                        seg => new ScoredSegment(seg, res.score || 0)
-                                    )
-                                )
-                            )
-                        );
-
-                        // lookup unknown segments
-                        let unknown_ids = [...new Set(content.flatMap(res => (res.parts || new Array<string>())))].filter(id => !this.mediaSegments.has(id))
-
-                        if (unknown_ids.length > 0) {
-
-                            console.log('looking up ' + unknown_ids.length + ' segment descriptors');
-
-                            this.segmentService.findSegmentByIdBatched(
-                                {
-                                    ids: unknown_ids
-                                } as IdList
-                            ).subscribe({
-                                next: (result) => {
-                                    if (result.content !== undefined) {
-                                        let descriptors = result.content as Array<MediaSegmentDescriptor>;
-                                        descriptors.forEach(d => {
-                                            if (d.segmentId !== undefined) {
-                                                this.mediaSegments.set(d.segmentId, d);
-                                            }
-                                        });
-
-                                        console.log('received ' + descriptors.length + ' segment descriptors');
-
-                                        // lookup unknown segments
-                                        let unknown_ids = [...new Set(descriptors.flatMap(descriptor => (descriptor.objectId || "")))].filter(id => id !== "" && !this.mediaObjects.has(id))
-
-                                        if (unknown_ids.length > 0) {
-
-                                            console.log('looking up ' + unknown_ids.length + ' object descriptors');
-
-                                            this.objectService.findObjectsByIdBatched(
-                                                {
-                                                    ids: unknown_ids
-                                                } as IdList
-                                            ).subscribe({
-                                                next: (result) => {
-                                                    if (result.content !== undefined) {
-                                                        let descriptors = result.content as Array<MediaObjectDescriptor>;
-
-                                                        descriptors.forEach(d => {
-                                                            if (d.objectid !== undefined) {
-                                                                this.mediaObjects.set(d.objectid, d);
-                                                            }
-                                                        });
-
-                                                        console.log('received ' + descriptors.length + ' object descriptors');
-
-                                                        //all segments and objects received, query complete
-                                                        this.lastQueryResult.next(queryResult);
-                                                        this.queryRunning.next(false);
-                                                    }
-                                                },
-                                                error: (error) => {
-                                                    console.log('error during object descriptor lookup', error);
-                                                }
-                                            });
-                                        } else { //no unknown object ids
-                                            this.lastQueryResult.next(queryResult);
-                                            this.queryRunning.next(false);
-                                        }
-                                    }
-                                },
-                                error: (error) => {
-                                    console.log('error during segment descriptor lookup', error);
+                        content.forEach((retrievable) => {
+                            if (retrievable.type === "segment" || retrievable.type === "") {
+                                let segment: MediaSegmentModel = {
+                                    id: retrievable.id,
+                                    objectId: "",
+                                    start: retrievable.properties["start"] as unknown as number,
+                                    end: retrievable.properties["end"] as unknown as number,
+                                    startabs: retrievable.properties["start"] as unknown as number,
+                                    endabs: retrievable.properties["end"] as unknown as number,
+                                    count: 0,
+                                    sequenceNumber: 0,
+                                    score: retrievable.score
+                                };
+                                if (segment.id != null) {
+                                    this.mediaSegments.set(segment.id, segment);
                                 }
+                            }
+                        });
+                        // Parse all objects find all according segments and add to map
+                        content.forEach((retrievable) => {
+                            if (retrievable.type === "source") {
+                                let segments = new Array<MediaSegmentModel>();
+                                retrievable.parts.forEach((part) => {
+                                    let segment = this.mediaSegments.get(part);
+                                    if (segment != null) {
+                                        segment.objectId = retrievable.id;
+                                        segments.push(segment);
+                                    } else {
+                                        console.log('segment not found', part);
+                                    }
+                                });
+                                let object: MediaObjectModel = {
+                                    id: retrievable.id,
+                                    name: "",
+                                    path: retrievable.properties["path"] as unknown as string,
+                                    mediatype: retrievable.properties["mediatype"] as unknown as MediaObjectModel.MediatypeEnum,
+                                    exists: false,
+                                    contentURL: "",
+                                    score: retrievable.score,
+                                    segments: segments
 
-                            });
-                        } else { //no unknown segment ids, request complete
-                            this.lastQueryResult.next(queryResult);
-                            this.queryRunning.next(false);
-                        }
+                                };
+                                if (object.id != null) {
+                                    this.mediaObjects.set(object.id.toString(), object);
+                                }
+                            }
+                        });
+                        console.log('query result');
+                        this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values())));
                     }
                 }
             }
         )
-        /*this.segmentsService.findSegmentSimilarTemporal(query).subscribe(
-            {
-                //complete: () => { this.queryRunning.next(false); },
-                error: (error) => {
-                    console.log('error during querying', error);
-                    this.queryRunning.next(false);
-                },
-                next: (result) => {
-
-                    if (result.content !== undefined) {
-                        let content = result.content as Array<TemporalObject>;
-                        let queryResult = new QueryResult(
-                            content.map(
-                                res => new ScoredObject(
-                                    res.objectId || "n/a",
-                                    (res.segments || new Array<string>()).map(
-                                        seg => new ScoredSegment(seg, res.score || 0)
-                                    )
-                                )
-                            )
-                        );
-
-                        // lookup unknown segments
-                        let unknown_ids = [...new Set(content.flatMap(res => (res.segments || new Array<string>())))].filter(id => !this.mediaSegments.has(id))
-
-                        if (unknown_ids.length > 0) {
-
-                            console.log('looking up ' + unknown_ids.length + ' segment descriptors');
-
-                            this.segmentService.findSegmentByIdBatched(
-                                {
-                                    ids: unknown_ids
-                                } as IdList
-                            ).subscribe({
-                                next: (result) => {
-                                    if (result.content !== undefined) {
-                                        let descriptors = result.content as Array<MediaSegmentDescriptor>;
-                                        descriptors.forEach(d => {
-                                            if (d.segmentId !== undefined) {
-                                                this.mediaSegments.set(d.segmentId, d);
-                                            }
-                                        });
-
-                                        console.log('received ' + descriptors.length + ' segment descriptors');
-
-                                        // lookup unknown segments
-                                        let unknown_ids = [...new Set(descriptors.flatMap(descriptor => (descriptor.objectId || "")))].filter(id => id !== "" && !this.mediaObjects.has(id))
-
-                                        if (unknown_ids.length > 0) {
-
-                                            console.log('looking up ' + unknown_ids.length + ' object descriptors');
-
-                                            this.objectService.findObjectsByIdBatched(
-                                                {
-                                                    ids: unknown_ids
-                                                } as IdList
-                                            ).subscribe({
-                                                next: (result) => {
-                                                    if (result.content !== undefined) {
-                                                        let descriptors = result.content as Array<MediaObjectDescriptor>;
-
-                                                        descriptors.forEach(d => {
-                                                            if (d.objectid !== undefined) {
-                                                                this.mediaObjects.set(d.objectid, d);
-                                                            }
-                                                        });
-
-                                                        console.log('received ' + descriptors.length + ' object descriptors');
-
-                                                        //all segments and objects received, query complete
-                                                        this.lastQueryResult.next(queryResult);
-                                                        this.queryRunning.next(false);
-                                                    }
-                                                },
-                                                error: (error) => {
-                                                    console.log('error during object descriptor lookup', error);
-                                                }
-                                            });
-                                        } else { //no unknown object ids
-                                            this.lastQueryResult.next(queryResult);
-                                            this.queryRunning.next(false);
-                                        }
-                                    }
-                                },
-                                error: (error) => {
-                                    console.log('error during segment descriptor lookup', error);
-                                }
-
-                            });
-                        } else { //no unknown segment ids, request complete
-                            this.lastQueryResult.next(queryResult);
-                            this.queryRunning.next(false);
-                        }
-                    }
-                }
-            }
-        )*/
     }
 
     public moreLikeThis(segmentId: string) {
-
-        if (this.queryRunning.getValue()) {
-            console.log('only one query can be active');
-            return;
-        }
-
-        console.log('starting query');
-
-        this.queryRunning.next(true);
-        this.lastQueryResult.next(new QueryResult([])); //reset display
-
-        this.segmentsService.findSegmentSimilar(
-            {
-                terms: [
-                    {
-                        categories: [Settings.moreLikeThisCategory],
-                        type: 'ID',
-                        data: segmentId
-                    } as QueryTerm
-                ]
-            } as SimilarityQuery
-        ).subscribe({
-            next: (result) => {
-                if (result.results !== undefined) {
-                    let resultPairs = (result.results as Array<SimilarityQueryResult>)[0].content || new Array<StringDoublePair>; // since only one category is used, no fusion is necessary
-
-                    let unknown_ids = [...new Set(resultPairs.map(pair => pair.key || '').filter(id => id !== '' && !this.mediaSegments.has(id)))]
-
-                    if (unknown_ids.length > 0) {
-
-                        this.segmentService.findSegmentByIdBatched(
-                            {
-                                ids: unknown_ids
-                            } as IdList
-                        ).subscribe({
-                            next: (result) => {
-                                if (result.content !== undefined) {
-                                    let descriptors = result.content as Array<MediaSegmentDescriptor>;
-                                    descriptors.forEach(d => {
-                                        if (d.segmentId !== undefined) {
-                                            this.mediaSegments.set(d.segmentId, d);
-                                        }
-                                    });
-
-                                    console.log('received ' + descriptors.length + ' segment descriptors');
-
-                                    // lookup unknown segments
-                                    let unknown_ids = [...new Set(descriptors.flatMap(descriptor => (descriptor.objectId || "")))].filter(id => id !== "" && !this.mediaObjects.has(id))
-
-                                    if (unknown_ids.length > 0) {
-
-                                        console.log('looking up ' + unknown_ids.length + ' object descriptors');
-
-                                        this.objectService.findObjectsByIdBatched(
-                                            {
-                                                ids: unknown_ids
-                                            } as IdList
-                                        ).subscribe({
-                                            next: (result) => {
-                                                if (result.content !== undefined) {
-                                                    let descriptors = result.content as Array<MediaObjectDescriptor>;
-
-                                                    descriptors.forEach(d => {
-                                                        if (d.objectid !== undefined) {
-                                                            this.mediaObjects.set(d.objectid, d);
-                                                        }
-                                                    });
-
-                                                    console.log('received ' + descriptors.length + ' object descriptors');
-
-                                                    //all segments and objects received, query complete
-                                                    this.lastQueryResult.next(this.processResultPairs(resultPairs));
-                                                    this.queryRunning.next(false);
-                                                }
-                                            },
-                                            error: (error) => {
-                                                console.log('error during object descriptor lookup', error);
-                                            }
-                                        });
-                                    } else {
-                                        this.lastQueryResult.next(this.processResultPairs(resultPairs));
-                                        this.queryRunning.next(false);
-                                    }
-                                }
-                            }
-                        });
-
-                    } else {
-                        this.lastQueryResult.next(this.processResultPairs(resultPairs));
-                        this.queryRunning.next(false);
-                    }
-
-
-                }
-
-            },
-            error: (error) => {
-                console.log('error during more-like-this query', error);
-                this.queryRunning.next(false);
-            }
-        });
-
-    }
-
-    private processResultPairs(results: Array<StringDoublePair>):
-        QueryResult {
-
-        let objects = new Map<string, Array<ScoredSegment>>();
-
-        for (let pair of results) {
-            let segmentDescriptor = this.mediaSegments.get(pair.key || '')
-            if (segmentDescriptor !== undefined) {
-                let objectId = segmentDescriptor.objectId || '';
-                if (!objects.has(objectId)) {
-                    objects.set(objectId, new Array<ScoredSegment>());
-                }
-                objects.get(objectId)?.push(new ScoredSegment(pair.key || '', pair.value || 0))
-            }
-        }
-
-        let scoredObjects = new Array<ScoredObject>();
-
-        for (let [objectId, segments] of objects) {
-            scoredObjects.push(new ScoredObject(objectId, segments));
-        }
-
-        return new QueryResult(scoredObjects);
 
     }
 }
