@@ -4,7 +4,7 @@
         {"text": "Submit to competition", "action": getSubmitCallback(scoredSegment.id), "key": "ctrl"}]'>
     </app-context-click>
 
-    <img src="{{base}}MVK/{{scoredSegment.id}}.jpg" class="previewImage" (click)="show(scoredSegment.id)"
+    <img src="{{base}}/{{scoredSegment.id}}.jpg" class="previewImage" (click)="show(scoredSegment.id)"
         (contextmenu)="contextMenuCallback($event, {})" />
     <div class="footer">
         <button mat-mini-fab color="primary" matTooltip="More like this"
