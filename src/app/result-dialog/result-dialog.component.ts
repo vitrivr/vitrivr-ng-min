@@ -2,7 +2,7 @@ import {ScoredSegment} from './../query/scored-segment.model';
 import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaSegmentQueryResult, SegmentService} from "../../../openapi/cineast";
-import {map, Observable, publish, tap} from "rxjs";
+import {map, Observable, of, publish, tap} from "rxjs";
 
 import {SubmissionService} from "../../../openapi/dres";
 import {DresService} from "../query/dres.service";
@@ -37,13 +37,14 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.segment = this.queryService.getSegmentById(this.data.id);
     let url = `${this.path}`+"/"+`${this.schema}`+"/"+`${this.segment?.mediaObjectModel?.path}`;
+    this.mediaUrl = of(url);
   }
 
   private initPlayer(){
     if(this.video){
       this.video.nativeElement.addEventListener('timeupdate', () => {
         // @ts-ignore
-        if(this.currentSegment()?.startabs <= this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
+        if(this.currentSegment()?.startabs/1000000000 <= this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
           this.addOnSegmentClass();
         }else{
           this.removeOnSegmentClass();
@@ -51,7 +52,7 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
       });
       this.video.nativeElement.addEventListener('loadeddata', () => {
         // @ts-ignore
-        this.video.nativeElement.currentTime = this.currentSegment()?.startabs ?? 0;
+        this.video.nativeElement.currentTime = this.currentSegment()?.startabs/1000000000 ?? 0;
         // @ts-ignore
         this.video?.nativeElement?.play().then((_) => {});
       })

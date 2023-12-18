@@ -93,7 +93,7 @@ export class QueryService {
         this.lastQueryResult.next(new QueryResult([])); //reset display
 
         // @ts-ignore
-        let text = termsMap.get("CLIP") || "";
+        let text = termsMap.get("clip0") || "";
         let informationNeedDescription =
             {
                 "inputs": {
@@ -215,21 +215,28 @@ export class QueryService {
         let informationNeedDescription =
             {
                 "inputs": {
-                    "myId1": {"type": "ID", "id": `${segmentId}`}
+                    "myId": {"type": "ID", "id": `${segmentId}`}
                 },
                 "operations": {
-                    "clip1": {"type": "RETRIEVER", "field": "clip", "input": "myId1"},
-                    "lookup1": {
-                        "type": "TRANSFORMER",
-                        "transformerName": "FieldLookup",
-                        "input": "clip1",
-                        "properties": {"field": "time", "keys": "start, end"}
-                    },
-                    "relations1": {
+                    "clip": {"type": "RETRIEVER", "field": "clip", "input": "myId"},
+                    "relations": {
                         "type": "TRANSFORMER",
                         "transformerName": "RelationExpander",
-                        "input": "lookup1",
+                        "input": "clip",
                         "properties": {"outgoing": "partOf"}
+                    },
+                    "lookup": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "FieldLookup",
+                        "input": "relations",
+                        "properties": {"field": "time", "keys": "start, end"}
+                    },
+                    "aggregator": {"type": "TRANSFORMER", "transformerName": "ScoreAggregator", "input": "lookup"},
+                    "lookup2": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "FieldLookup",
+                        "input": "aggregator",
+                        "properties": {"field": "file", "keys": "path"}
                     }
                 },
                 "context": {
@@ -238,7 +245,7 @@ export class QueryService {
                     },
                     "local": {}
                 },
-                "output": "relations1"
+                "output": "lookup2"
             } as InformationNeedDescription;
         this.genricQuery(informationNeedDescription);
     }

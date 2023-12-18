@@ -18,7 +18,7 @@ export class Settings {
   public static readonly objectBasePath = 'http://localhost:8080/media';
   public static readonly moreLikeThisCategory = 'cliptext';
   public static readonly queryCategories = [
-    ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
+    ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
   public static readonly dresBaseApi = "https://vbs.videobrowsing.org"
   public static readonly dresUser = 'vitrivr4b'
