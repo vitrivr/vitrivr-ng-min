@@ -30,6 +30,8 @@ export class QueryService {
 
     private lastInputs = new BehaviorSubject<Map<string, string>>(new Map());
 
+    private schema = Settings.schema;
+
     public constructor(
         private retrievalService: RetrievalService,
         private dresService: DresService
@@ -121,15 +123,20 @@ export class QueryService {
                 },
                 "context": {
                     "global": {
-                        "limit": "10"
+                        "limit": `${Settings.resultPageSize}`
                     },
                     "local": {}
                 },
                 "output": "lookup2"
             } as InformationNeedDescription;
         this.genricQuery(informationNeedDescription);
+
     }
+
     public genricQuery(informationNeedDescription: InformationNeedDescription) {
+        this.mediaObjects.clear();
+        this.mediaSegments.clear();
+
         this.retrievalService.postExecuteQuery("MVK", informationNeedDescription, 'body', false, {
             httpHeaderAccept: 'application/json',
         }).subscribe(
@@ -147,6 +154,7 @@ export class QueryService {
                                 let segment: MediaSegmentModel = {
                                     id: retrievable.id,
                                     objectId: "",
+                                    mediaObjectModel: undefined,
                                     start: retrievable.properties["start"] as unknown as number,
                                     end: retrievable.properties["end"] as unknown as number,
                                     startabs: retrievable.properties["start"] as unknown as number,
@@ -176,21 +184,27 @@ export class QueryService {
                                 let object: MediaObjectModel = {
                                     id: retrievable.id,
                                     name: "",
-                                    path: retrievable.properties["path"] as unknown as string,
+                                    path: (retrievable.properties["path"] as unknown as string).replace(/^.*[\\/]/, ''),
                                     mediatype: retrievable.properties["mediatype"] as unknown as MediaObjectModel.MediatypeEnum,
                                     exists: false,
                                     contentURL: "",
                                     score: retrievable.score,
                                     segments: segments
-
                                 };
                                 if (object.id != null) {
+                                    for (let segment of segments) {
+                                        segment.mediaObjectModel = object;
+                                    }
                                     this.mediaObjects.set(object.id.toString(), object);
                                 }
                             }
                         });
                         console.log('query result');
-                        this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values())));
+
+                        this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values()).sort(
+                            (a, b) => b.score - a.score
+                        )));
+                        this.queryRunning.next(false);
                     }
                 }
             }
@@ -201,25 +215,35 @@ export class QueryService {
         let informationNeedDescription =
             {
                 "inputs": {
-                    "myId1" : {"type": "ID", "id": `${segmentId}`}
+                    "myId1": {"type": "ID", "id": `${segmentId}`}
                 },
                 "operations": {
-                    "clip1" : {"type": "RETRIEVER", "field": "clip", "input": "myId1"},
-                    "lookup1" : {"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": "clip1", "properties": {"field": "time", "keys": "start, end"}},
-                    "relations1" : {"type": "TRANSFORMER", "transformerName": "RelationExpander", "input": "lookup1", "properties": {"outgoing": "partOf"}}
+                    "clip1": {"type": "RETRIEVER", "field": "clip", "input": "myId1"},
+                    "lookup1": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "FieldLookup",
+                        "input": "clip1",
+                        "properties": {"field": "time", "keys": "start, end"}
+                    },
+                    "relations1": {
+                        "type": "TRANSFORMER",
+                        "transformerName": "RelationExpander",
+                        "input": "lookup1",
+                        "properties": {"outgoing": "partOf"}
+                    }
                 },
                 "context": {
                     "global": {
-                        "limit": "10"
+                        "limit": `${Settings.resultPageSize}`
                     },
-                    "local" : {}
+                    "local": {}
                 },
                 "output": "relations1"
             } as InformationNeedDescription;
         this.genricQuery(informationNeedDescription);
     }
 
-    public getSegmentById(segmentId: string) : MediaSegmentModel | undefined {
+    public getSegmentById(segmentId: string): MediaSegmentModel | undefined {
         return this.mediaSegments.get(segmentId);
     }
 }

@@ -2,12 +2,13 @@ import {ScoredSegment} from './../query/scored-segment.model';
 import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatDialog, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import {MediaSegmentQueryResult, SegmentService} from "../../../openapi/cineast";
-import {map, Observable, tap} from "rxjs";
-import {Settings} from "../settings.model";
+import {map, Observable, publish, tap} from "rxjs";
+
 import {SubmissionService} from "../../../openapi/dres";
 import {DresService} from "../query/dres.service";
 import {QueryService} from "../query/query.service";
 import {MediaSegmentModel} from "../query/model/MediaSegmentModel";
+import {Settings} from "../settings.model";
 
 @Component({
   selector: 'app-result-dialog',
@@ -16,6 +17,8 @@ import {MediaSegmentModel} from "../query/model/MediaSegmentModel";
 })
 export class ResultDialogComponent implements OnInit, AfterViewInit {
   private segment: MediaSegmentModel | undefined;
+  private path = Settings.objectBasePath;
+  private schema = Settings.schema;
 
   mediaUrl: Observable<string> | undefined;
   @ViewChild('videoPlayer', { static: false }) video: ElementRef | undefined;
@@ -31,9 +34,9 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
     this.initPlayer();
   }
 
-  ngOnInit(): string {
+  ngOnInit(): void {
     this.segment = this.queryService.getSegmentById(this.data.id);
-    return `${Settings.objectBasePath}${this.segment?.objectId}`;
+    let url = `${this.path}`+"/"+`${this.schema}`+"/"+`${this.segment?.mediaObjectModel?.path}`;
   }
 
   private initPlayer(){

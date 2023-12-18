@@ -10,11 +10,12 @@ export class Settings {
   ];
   public static readonly schema = Settings.schemas[0]
 
+  public static readonly resultPageSize = 50;
 
   /**
    * Expects that objectBasePath/<objectId> serves the video
    */
-  public static readonly objectBasePath = 'https://min.vitrivr.tech/objects/';
+  public static readonly objectBasePath = 'http://localhost:8080/media';
   public static readonly moreLikeThisCategory = 'cliptext';
   public static readonly queryCategories = [
     ['visualtextcoembedding', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']

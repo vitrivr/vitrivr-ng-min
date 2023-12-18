@@ -11,10 +11,12 @@
  */
 import {ScoredObject} from "../scored-object.model";
 import {ScoredSegment} from "../scored-segment.model";
+import {MediaObjectModel} from "./MediaObjectModel";
 
 
 export class MediaSegmentModel extends ScoredSegment {
     objectId?: string;
+    mediaObjectModel?: MediaObjectModel;
     start?: number;
     end?: number;
     startabs?: number;
