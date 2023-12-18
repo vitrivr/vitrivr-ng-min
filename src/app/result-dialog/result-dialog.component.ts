@@ -6,6 +6,8 @@ import {map, Observable, tap} from "rxjs";
 import {Settings} from "../settings.model";
 import {SubmissionService} from "../../../openapi/dres";
 import {DresService} from "../query/dres.service";
+import {QueryService} from "../query/query.service";
+import {MediaSegmentModel} from "../query/model/MediaSegmentModel";
 
 @Component({
   selector: 'app-result-dialog',
@@ -13,13 +15,13 @@ import {DresService} from "../query/dres.service";
   styleUrls: ['./result-dialog.component.scss']
 })
 export class ResultDialogComponent implements OnInit, AfterViewInit {
-  private segment: MediaSegmentQueryResult | undefined;
+  private segment: MediaSegmentModel | undefined;
 
   mediaUrl: Observable<string> | undefined;
   @ViewChild('videoPlayer', { static: false }) video: ElementRef | undefined;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: ScoredSegment,
-    private segmentService: SegmentService,
+    private queryService: QueryService,
     private dres: DresService
   ) {
 
@@ -29,17 +31,9 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
     this.initPlayer();
   }
 
-  ngOnInit(): void {
-    this.mediaUrl = this.segmentService.findSegmentById(this.data.id).pipe(
-      tap((segment) => {
-          this.segment = segment;
-        }
-      ),
-      map((segment) => {
-        // @ts-ignore
-        return `${Settings.objectBasePath}${this.segment?.content[0].objectId}`
-      })
-    );
+  ngOnInit(): string {
+    this.segment = this.queryService.getSegmentById(this.data.id);
+    return `${Settings.objectBasePath}${this.segment?.objectId}`;
   }
 
   private initPlayer(){
@@ -73,14 +67,12 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public currentSegment(){
-    return this.segment?.content?.[0];
+  public currentSegment():  MediaSegmentModel | undefined{
+    return this.segment;
   }
 
   public submit() {
     // @ts-ignore
     this.dres.submitByTime(this.currentSegment().objectId.replace(/v_/, '') ?? 'n/a',this.video.nativeElement.currentTime);
   }
-
-
 }

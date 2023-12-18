@@ -121,13 +121,15 @@ export class QueryService {
                 },
                 "context": {
                     "global": {
-                        "limit": "100"
+                        "limit": "10"
                     },
                     "local": {}
                 },
                 "output": "lookup2"
             } as InformationNeedDescription;
-
+        this.genricQuery(informationNeedDescription);
+    }
+    public genricQuery(informationNeedDescription: InformationNeedDescription) {
         this.retrievalService.postExecuteQuery("MVK", informationNeedDescription, 'body', false, {
             httpHeaderAccept: 'application/json',
         }).subscribe(
@@ -196,6 +198,28 @@ export class QueryService {
     }
 
     public moreLikeThis(segmentId: string) {
+        let informationNeedDescription =
+            {
+                "inputs": {
+                    "myId1" : {"type": "ID", "id": `${segmentId}`}
+                },
+                "operations": {
+                    "clip1" : {"type": "RETRIEVER", "field": "clip", "input": "myId1"},
+                    "lookup1" : {"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": "clip1", "properties": {"field": "time", "keys": "start, end"}},
+                    "relations1" : {"type": "TRANSFORMER", "transformerName": "RelationExpander", "input": "lookup1", "properties": {"outgoing": "partOf"}}
+                },
+                "context": {
+                    "global": {
+                        "limit": "10"
+                    },
+                    "local" : {}
+                },
+                "output": "relations1"
+            } as InformationNeedDescription;
+        this.genricQuery(informationNeedDescription);
+    }
 
+    public getSegmentById(segmentId: string) : MediaSegmentModel | undefined {
+        return this.mediaSegments.get(segmentId);
     }
 }

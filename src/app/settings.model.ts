@@ -4,10 +4,12 @@ export class Settings {
   public static readonly engineBasePath = 'http://localhost:7070';
 
   // path to the thumbnails, selected schema is added automatically to the path
-  public static readonly thumbnailBasePath = 'http://localhost:8080/thumbnails/MVK/';
+  public static readonly thumbnailBasePath = 'http://localhost:8080/thumbnails';
   public static readonly schemas = [
     'MVK', 'V3C', 'VBSLHE'
   ];
+  public static readonly schema = Settings.schemas[0]
+
 
   /**
    * Expects that objectBasePath/<objectId> serves the video
