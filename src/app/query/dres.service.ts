@@ -74,7 +74,7 @@ export class DresService {
       return;
     }
 
-    this.submitByTime(segment?.objectId?.replace(/v_/, '') ?? 'n/a', ((segment.startabs || 0) + (segment.endabs || 0)) / 2)
+    this.submitByTime(segment?.objectId?? 'n/a', ((segment.startabs || 0) + (segment.endabs || 0)) / 2)
   }
 
   public logResults(result: QueryResult, terms: Map<string, string>) {

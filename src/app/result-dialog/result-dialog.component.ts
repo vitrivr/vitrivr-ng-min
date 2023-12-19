@@ -44,7 +44,7 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
     if(this.video){
       this.video.nativeElement.addEventListener('timeupdate', () => {
         // @ts-ignore
-        if(this.currentSegment()?.startabs/1000000000 <= this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
+        if(this.currentSegment()?.startabs == this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
           this.addOnSegmentClass();
         }else{
           this.removeOnSegmentClass();
@@ -52,7 +52,7 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
       });
       this.video.nativeElement.addEventListener('loadeddata', () => {
         // @ts-ignore
-        this.video.nativeElement.currentTime = this.currentSegment()?.startabs/1000000000 ?? 0;
+        this.video.nativeElement.currentTime = this.currentSegment()?.startabs ?? 0;
         // @ts-ignore
         this.video?.nativeElement?.play().then((_) => {});
       })

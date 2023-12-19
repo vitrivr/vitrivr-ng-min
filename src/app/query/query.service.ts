@@ -154,11 +154,12 @@ export class QueryService {
                                 let segment: MediaSegmentModel = {
                                     id: retrievable.id,
                                     objectId: "",
+                                    objectUUID: "",
                                     mediaObjectModel: undefined,
-                                    start: retrievable.properties["start"] as unknown as number,
-                                    end: retrievable.properties["end"] as unknown as number,
-                                    startabs: retrievable.properties["start"] as unknown as number,
-                                    endabs: retrievable.properties["end"] as unknown as number,
+                                    start: (+retrievable.properties["start"]) / 1_000_000_000,
+                                    end: (+retrievable.properties["end"]) / 1_000_000_000,
+                                    startabs: (+retrievable.properties["start"]) / 1_000_000_000,
+                                    endabs: (+retrievable.properties["end"]) / 1_000_000_000,
                                     count: 0,
                                     sequenceNumber: 0,
                                     score: retrievable.score
@@ -193,6 +194,8 @@ export class QueryService {
                                 };
                                 if (object.id != null) {
                                     for (let segment of segments) {
+                                        segment.objectUUID = object.id.toString();
+                                        segment.objectId = object.path;
                                         segment.mediaObjectModel = object;
                                     }
                                     this.mediaObjects.set(object.id.toString(), object);

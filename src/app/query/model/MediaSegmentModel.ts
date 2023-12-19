@@ -15,7 +15,9 @@ import {MediaObjectModel} from "./MediaObjectModel";
 
 
 export class MediaSegmentModel extends ScoredSegment {
+    // clear ID for competition
     objectId?: string;
+    objectUUID?: string;
     mediaObjectModel?: MediaObjectModel;
     start?: number;
     end?: number;

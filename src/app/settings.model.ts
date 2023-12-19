@@ -10,7 +10,7 @@ export class Settings {
   ];
   public static readonly schema = Settings.schemas[0]
 
-  public static readonly resultPageSize = 50;
+  public static readonly resultPageSize = 300;
 
   /**
    * Expects that objectBasePath/<objectId> serves the video
@@ -20,8 +20,8 @@ export class Settings {
   public static readonly queryCategories = [
     ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
-  public static readonly dresBaseApi = "https://vbs.videobrowsing.org"
-  public static readonly dresUser = 'vitrivr4b'
-  public static readonly dresPassword = 'PYDmvy3bR86dJTUYAMnG'
+  public static readonly dresBaseApi = "https://interactivevideoretrieval.com"
+  public static readonly dresUser = 'vitrivr1'
+  public static readonly dresPassword = 'vitrivr1'
 
 }

@@ -72,6 +72,7 @@ export class ResultTileComponent implements AfterViewInit{
   public submit(segmentId: string) {
 
     const segment = this.queryService.mediaSegment(segmentId);
+
     if (segment) {
       this.dresService.submit(segment);
       // Simple message.
