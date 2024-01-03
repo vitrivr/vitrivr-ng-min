@@ -37,6 +37,9 @@ import {from} from "rxjs";
 import {MatSelectModule} from "@angular/material/select";
 import {SideBarComponent} from "./side-bar/side-bar.component";
 import {MatSidenavModule} from '@angular/material/sidenav';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import {MatGridListModule} from "@angular/material/grid-list";
+import {MatChipsModule} from "@angular/material/chips";
 
 
 @NgModule({
@@ -55,6 +58,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
         CommonModule,
         AppRoutingModule,
         BrowserAnimationsModule,
+        FlexLayoutModule,
         MatIconModule,
         MatToolbarModule,
         MatSnackBarModule,
@@ -92,6 +96,8 @@ import {MatSidenavModule} from '@angular/material/sidenav';
         ),
         MatTooltipModule,
         MatSelectModule,
+        MatGridListModule,
+        MatChipsModule,
     ],
     providers: [
         QueryService,

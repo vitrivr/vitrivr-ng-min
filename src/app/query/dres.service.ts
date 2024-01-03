@@ -24,7 +24,7 @@ export class DresService {
       userService.getApiV1User().subscribe({
         error: err => {
           console.log('[DresService] no active session, trying to log in')
-          userService.postApiV1Login({
+         /* userService.postApiV1Login({
             username: Settings.dresUser,
             password: Settings.dresPassword
           } as LoginRequest).subscribe({
@@ -36,7 +36,7 @@ export class DresService {
               console.log('[DresService] got session token', value.sessionId)
               this.token = value.sessionId!!;
             }
-          });
+          });*/
         },
         next: value => {
           console.log('[DresService] got session token', value.sessionId)

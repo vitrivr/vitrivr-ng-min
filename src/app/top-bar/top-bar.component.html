@@ -1,37 +1,26 @@
 <mat-toolbar color="primary">
     <mat-toolbar-row>
         <div>
-            <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button>
+            <button (click)="toggleQueryPane()" [disableRipple]="true" mat-button color="primary">
                 <mat-icon>keyboard_arrow_{{showQueryPane ? 'up' : 'down'}}</mat-icon>
                 <img src="../assets/images/vitrivr_logo.png"> minimal
             </button>
-
-
         </div>
-
-            <button (click)="child.toggleSidebarPane()"
+        <mat-chip-listbox aria-label="Fish selection">
+            <mat-chip> Schema: {{localStorage.getItem('schema')}}</mat-chip>
+            <mat-chip>User: {{localStorage.getItem('dresUser')}}</mat-chip>
+            <mat-chip color="accent">Login: {{localStorage.getItem('dresLogin')}}</mat-chip>
+            <mat-chip (click)="child.toggleSidebarPane()"
                     matTooltip="Toggle query refinement sidebar">
                 <mat-icon>storage</mat-icon>
-            </button>
+            </mat-chip>
+        </mat-chip-listbox>
 
 
-        <div>
-            <div>
-                User: {{localStorage.getItem('dresUser')}}
-            </div>
-            <div>
-                Login: {{localStorage.getItem('dresLogin')}}
-            </div>
-            <div>
-                Schema: {{localStorage.getItem('schema')}}
-            </div>
 
-        <app-side-bar #child>
-        </app-side-bar>
-        </div>
     </mat-toolbar-row>
 
-    <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start"
+    <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-aligan-start"
                      [style.height]="calcHeight()">
         <div style="flex-basis: auto;" class="flex-container flex-layout-row ">
             <div *ngFor="let form of inputs; index as i" class="flex-container flex-layout-row flex-align-center">
@@ -57,3 +46,5 @@
 
 </mat-toolbar>
 <mat-progress-bar mode="indeterminate" *ngIf="(queryRunning | async)"></mat-progress-bar>
+<app-side-bar #child>
+</app-side-bar>

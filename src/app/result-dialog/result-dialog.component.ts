@@ -18,7 +18,7 @@ import {Settings} from "../settings.model";
 export class ResultDialogComponent implements OnInit, AfterViewInit {
   private segment: MediaSegmentModel | undefined;
   private path = Settings.objectBasePath;
-  private schema = Settings.schema;
+  private schema = localStorage.getItem('schema') as string;
 
   mediaUrl: Observable<string> | undefined;
   @ViewChild('videoPlayer', { static: false }) video: ElementRef | undefined;

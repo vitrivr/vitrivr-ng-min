@@ -66,7 +66,4 @@ export class TopBarComponent {
   calcHeight() {
     return `${Settings.queryCategories.length * 64}px`
   }
-
-
-
 }

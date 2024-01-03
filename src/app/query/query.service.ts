@@ -30,7 +30,6 @@ export class QueryService {
 
     private lastInputs = new BehaviorSubject<Map<string, string>>(new Map());
 
-    private schema = Settings.schema;
 
     public constructor(
         private retrievalService: RetrievalService,
@@ -136,8 +135,12 @@ export class QueryService {
     public genricQuery(informationNeedDescription: InformationNeedDescription) {
         this.mediaObjects.clear();
         this.mediaSegments.clear();
-
-        this.retrievalService.postExecuteQuery("V3C", informationNeedDescription, 'body', false, {
+        let schema = localStorage.getItem('schema')
+        if (schema == null) {
+            console.error('no schema selected');
+            return;
+        }
+        this.retrievalService.postExecuteQuery(schema, informationNeedDescription, 'body', false, {
             httpHeaderAccept: 'application/json',
         }).subscribe(
             {

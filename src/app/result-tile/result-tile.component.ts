@@ -38,7 +38,7 @@ export class ResultTileComponent implements AfterViewInit{
   scoredSegment: ScoredSegment = new ScoredSegment('', 0);
 
   base = Settings.thumbnailBasePath;
-  schema = Settings.schema;
+  schema = localStorage.getItem('schema') as string;
 
   get color(): string {
     let c = Math.round((1 - this.scoredSegment.score) * 255);
