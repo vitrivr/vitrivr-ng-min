@@ -8,7 +8,7 @@ export class Settings {
   public static readonly schemas = [
     'MVK', 'V3C', 'VBSLHE'
   ];
-  public static readonly schema = Settings.schemas[0]
+  public static readonly schema = Settings.schemas[1]
 
   public static readonly resultPageSize = 300;
 
@@ -21,7 +21,7 @@ export class Settings {
     ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
   public static readonly dresBaseApi = "https://interactivevideoretrieval.com"
-  public static readonly dresUser = 'vitrivr1'
-  public static readonly dresPassword = 'vitrivr1'
+  public static readonly dresUser = 'vitrivr3'
+  public static readonly dresPassword = 'vitrivr3'
 
 }

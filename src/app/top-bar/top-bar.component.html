@@ -5,20 +5,30 @@
                 <mat-icon>keyboard_arrow_{{showQueryPane ? 'up' : 'down'}}</mat-icon>
                 <img src="../assets/images/vitrivr_logo.png"> minimal
             </button>
+
+
         </div>
+
+            <button (click)="child.toggleSidebarPane()"
+                    matTooltip="Toggle query refinement sidebar">
+                <mat-icon>storage</mat-icon>
+            </button>
+
+
         <div>
-            Schema: {{selectedSchema}}
-            <mat-form-field>
-                <mat-select placeholder="Running on  schema" [(ngModel)]="selectedSchema" name="food">
-                    <mat-option *ngFor="let schema of schemas" [value]="schema">
-                        {{schema}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <div>
+                User: {{localStorage.getItem('dresUser')}}
+            </div>
+            <div>
+                Login: {{localStorage.getItem('dresLogin')}}
+            </div>
+            <div>
+                Schema: {{localStorage.getItem('schema')}}
+            </div>
+
+        <app-side-bar #child>
+        </app-side-bar>
         </div>
-        <span class="flexExpand"></span>
-
-
     </mat-toolbar-row>
 
     <mat-toolbar-row *ngIf="showQueryPane" class="flex-container flex-layout-row flex-space-between flex-align-start"

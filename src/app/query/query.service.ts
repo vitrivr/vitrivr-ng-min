@@ -137,7 +137,7 @@ export class QueryService {
         this.mediaObjects.clear();
         this.mediaSegments.clear();
 
-        this.retrievalService.postExecuteQuery("MVK", informationNeedDescription, 'body', false, {
+        this.retrievalService.postExecuteQuery("V3C", informationNeedDescription, 'body', false, {
             httpHeaderAccept: 'application/json',
         }).subscribe(
             {

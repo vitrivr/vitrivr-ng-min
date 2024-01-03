@@ -19,7 +19,7 @@ export class DresService {
   private token = ''
 
   constructor(private submissionService: SubmissionService, private userService: UserService, private logService: LogService) {
-
+    let sid = localStorage.getItem('sessionId')
     if (Settings.dresUser.trim().length > 0) {
       userService.getApiV1User().subscribe({
         error: err => {

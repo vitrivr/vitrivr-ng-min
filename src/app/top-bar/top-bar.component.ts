@@ -18,10 +18,9 @@ export class TopBarComponent {
   constructor(public queryService: QueryService) {
 
   }
+  protected readonly localStorage = localStorage;
 
   public showQueryPane: Boolean = true;
-  public schemas: string[] = Settings.schemas;
-  public selectedSchema: string = this.schemas[0];
 
 
   public queryRunning = this.queryService.queryRunning.asObservable();
@@ -67,4 +66,7 @@ export class TopBarComponent {
   calcHeight() {
     return `${Settings.queryCategories.length * 64}px`
   }
+
+
+
 }
