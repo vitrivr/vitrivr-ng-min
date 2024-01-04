@@ -10,7 +10,7 @@ export class Settings {
   ];
   public static readonly schema = Settings.schemas[1]
 
-  public static readonly resultPageSize = 300;
+  public static readonly resultPageSize = 50;
 
   /**
    * Expects that objectBasePath/<objectId> serves the video

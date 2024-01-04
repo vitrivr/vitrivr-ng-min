@@ -64,39 +64,41 @@ export class QueryService {
         return this.mediaSegments.get(segmentId) || null;
     }
 
-    public query() {
+    private informationNeedDescriptionBuilder(inputs : Map<string, string>): InformationNeedDescription {
 
-        if (this.queryRunning.getValue()) {
-            console.log('only one query can be active');
-            return;
+        let clip = inputs.get("clip0");
+
+        let jsonInputs: { [key: string]: InputData; } = {};
+        let jsonOperations: { [key: string]: OperatorDescription; } = {};
+        let temporalInputs: string[] = [];
+        for (let [key, value] of inputs) {
+            jsonInputs[key] = {"type": "TEXT", "data": `${value}`} as InputData;
+            jsonOperations[key+"retrieve"] =  {"type": "RETRIEVER", "field": "clip", "input": key} as OperatorDescription;
+            jsonOperations[key+"lookup"] =  {"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": key+"retrieve", "properties": {"field": "time", "keys": "start, end"}} as OperatorDescription;
+            jsonOperations[key+"relations"] =  {"type": "TRANSFORMER", "transformerName": "RelationExpander", "input": key+"lookup", "properties": {"outgoing": "partOf"}} as OperatorDescription;
+            temporalInputs.push(key+"relations");
         }
+        jsonOperations["temporal"] = {"type": "AGGREGATOR", "aggregatorName": "TemporalSequenceAggregator", "inputs": temporalInputs} as OperatorDescription;
+        jsonOperations["score"] = {"type": "TRANSFORMER", "transformerName": "ScoreAggregator",  "input": "temporal"} as OperatorDescription;
+        jsonOperations["filelookup"] ={"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": "score", "properties": {"field": "file", "keys": "path"}} as OperatorDescription;
 
+        let ind =
+            {
+                "inputs": jsonInputs,
+                "operations": jsonOperations,
+                "context": {
+                    "global": {
+                        "limit": `${Settings.resultPageSize}`
+                    },
+                    "local": {}
+                },
+                "output": "filelookup"
+            } as InformationNeedDescription;
 
-        let ic = 0;
-        let termsMap = new Map<string, string>();
-
-        for (let input of this.inputs) {
-            for (let [key, value] of input) {
-                if (value.value == null) {
-                    continue;
-                }
-                termsMap.set(key + ic, value.value);
-            }
-            ++ic;
-        }
-
-        this.lastInputs.next(termsMap);
-        console.log('starting query');
-
-        this.queryRunning.next(true);
-        this.lastQueryResult.next(new QueryResult([])); //reset display
-
-        // @ts-ignore
-        let text = termsMap.get("clip0") || "";
-        let informationNeedDescription =
+    /*    let informationNeedDescription =
             {
                 "inputs": {
-                    "mytext": {"type": "TEXT", "data": `${text}`}
+                    "mytext": {"type": "TEXT", "data": `${clip}`}
                 },
                 "operations": {
                     "clip": {"type": "RETRIEVER", "field": "clip", "input": "mytext"},
@@ -127,7 +129,39 @@ export class QueryService {
                     "local": {}
                 },
                 "output": "lookup2"
-            } as InformationNeedDescription;
+            } as InformationNeedDescription;*/
+        return ind;
+    }
+
+    public query() {
+
+        if (this.queryRunning.getValue()) {
+            console.log('only one query can be active');
+            return;
+        }
+
+
+        let ic = 0;
+        let termsMap = new Map<string, string>();
+
+        for (let input of this.inputs) {
+            for (let [key, value] of input) {
+                if (value.value == null) {
+                    continue;
+                }
+                termsMap.set(key + ic, value.value);
+            }
+            ++ic;
+        }
+
+        this.lastInputs.next(termsMap);
+        console.log('starting query');
+
+        this.queryRunning.next(true);
+        this.lastQueryResult.next(new QueryResult([])); //reset display
+
+        // @ts-ignore
+        let informationNeedDescription = this.informationNeedDescriptionBuilder(termsMap)
         this.genricQuery(informationNeedDescription);
 
     }
