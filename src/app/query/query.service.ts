@@ -65,9 +65,6 @@ export class QueryService {
     }
 
     private informationNeedDescriptionBuilder(inputs : Map<string, string>): InformationNeedDescription {
-
-        let clip = inputs.get("clip0");
-
         let jsonInputs: { [key: string]: InputData; } = {};
         let jsonOperations: { [key: string]: OperatorDescription; } = {};
         let temporalInputs: string[] = [];
@@ -94,42 +91,6 @@ export class QueryService {
                 },
                 "output": "filelookup"
             } as InformationNeedDescription;
-
-    /*    let informationNeedDescription =
-            {
-                "inputs": {
-                    "mytext": {"type": "TEXT", "data": `${clip}`}
-                },
-                "operations": {
-                    "clip": {"type": "RETRIEVER", "field": "clip", "input": "mytext"},
-                    "relations": {
-                        "type": "TRANSFORMER",
-                        "transformerName": "RelationExpander",
-                        "input": "clip",
-                        "properties": {"outgoing": "partOf"}
-                    },
-                    "lookup": {
-                        "type": "TRANSFORMER",
-                        "transformerName": "FieldLookup",
-                        "input": "relations",
-                        "properties": {"field": "time", "keys": "start, end"}
-                    },
-                    "aggregator": {"type": "TRANSFORMER", "transformerName": "ScoreAggregator", "input": "lookup"},
-                    "lookup2": {
-                        "type": "TRANSFORMER",
-                        "transformerName": "FieldLookup",
-                        "input": "aggregator",
-                        "properties": {"field": "file", "keys": "path"}
-                    }
-                },
-                "context": {
-                    "global": {
-                        "limit": `${Settings.resultPageSize}`
-                    },
-                    "local": {}
-                },
-                "output": "lookup2"
-            } as InformationNeedDescription;*/
         return ind;
     }
 
