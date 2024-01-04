@@ -21,7 +21,7 @@ export class Settings {
     ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
   ];
   public static readonly dresBaseApi = "https://interactivevideoretrieval.com"
-  public static readonly dresUser = 'vitrivr3'
-  public static readonly dresPassword = 'vitrivr3'
+  public static readonly dresUser = 'vitrivr1'
+  public static readonly dresPassword = 'vitrivr1'
 
 }

@@ -7,6 +7,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {LoginRequest, UserService} from "../../../openapi/dres";
+import {DresService} from "../query/dres.service";
 
 
 @Component({
@@ -16,7 +17,7 @@ import {LoginRequest, UserService} from "../../../openapi/dres";
 })
 export class SideBarComponent {
 
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private dresService: DresService) {
 
         if (localStorage.getItem('schema')) {
             this.selectedSchema = localStorage.getItem('schema') as string;
@@ -39,35 +40,7 @@ export class SideBarComponent {
         localStorage.setItem('dresUser', username);
         localStorage.setItem('dresPassword', password);
 
-
-        if (Settings.dresUser.trim().length > 0) {
-            this.userService.getApiV1User().subscribe({
-                error: err => {
-                    console.log('[DresService] no active session, trying to log in')
-                    this.userService.postApiV1Login({
-                        username: localStorage.getItem('dresUser'),
-                        password: localStorage.getItem('dresPassword'),
-                    } as LoginRequest).subscribe({
-                        error: err1 => {
-                            console.log('could not log in', err1)
-                            localStorage.setItem('dresLogin', "false");
-                        },
-                        next: value => {
-                            console.log('[DresService] login successful for user', value.username)
-                            console.log('[DresService] got session token', value.sessionId)
-                            localStorage.setItem('token', value.sessionId!!);
-                            localStorage.setItem('dresLogin', "true");
-                        }
-                    });
-                },
-                next: value => {
-                    console.log('[DresService] got session token', value.sessionId)
-                    localStorage.setItem('token', value.sessionId!!);
-                    localStorage.setItem('dresLogin', "true");
-                }
-            });
-        }
-
+        this.dresService.login(username, password);
     }
 
     eventSchemaChange(change: string, $event: any) {
