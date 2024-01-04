@@ -20,16 +20,38 @@ export class DresService {
     private token = ''
 
     constructor(private submissionService: SubmissionService, private userService: UserService, private logService: LogService) {
+        let sid = localStorage.getItem('sessionId')
+        let loginstate = localStorage.getItem('dresLogin')
+        if (sid && loginstate == 'true') {
+            this.token = sid
+        } else {
+            localStorage.setItem('dresLogin', 'false')
+            localStorage.setItem('d', 'false')
+            localStorage.setItem('sessionId', '')
+            localStorage.setItem('dresUser', '');
+            localStorage.setItem('dresPassword', '');
+            this.token = ''
+        }
+    }
 
-
+    public logout() {
+        localStorage.setItem('dresLogin', 'false')
+        localStorage.setItem('d', 'false')
+        localStorage.setItem('sessionId', '')
+        localStorage.setItem('dresUser', '');
+        localStorage.setItem('dresPassword', '');
+        this.token = ''
     }
 
     public login(username: string, password: string) {
         let sid = localStorage.getItem('sessionId')
-        if (sid) {
+        let loginstate = localStorage.getItem('dresLogin')
+        localStorage.setItem('dresUser', username);
+        localStorage.setItem('dresPassword', password);
+        if (sid && loginstate == 'true') {
             this.token = sid
         } else {
-            if (username.trim().length > 0 && password.trim().length > 0){
+            if (username.trim().length > 0 && password.trim().length > 0) {
                 this.userService.getApiV1User().subscribe({
                     error: err => {
                         console.log('[DresService] no active session, trying to log in')
@@ -43,15 +65,18 @@ export class DresService {
                             next: value => {
                                 console.log('[DresService] login successful for user', value.username)
                                 console.log('[DresService] got session token', value.sessionId)
-                                this.token = value.sessionId!!;
+
                                 localStorage.setItem('dresLogin', 'true')
+                                localStorage.setItem('sessionId', value.sessionId!!)
+                                this.token = localStorage.getItem('sessionId') as string;
                             }
                         });
                     },
                     next: value => {
                         console.log('[DresService] got session token', value.sessionId)
                         localStorage.setItem('dresLogin', 'true')
-                        this.token = value.sessionId!!;
+                        localStorage.setItem('sessionId', value.sessionId!!)
+                        this.token = localStorage.getItem('sessionId') as string;
                     }
                 });
             }

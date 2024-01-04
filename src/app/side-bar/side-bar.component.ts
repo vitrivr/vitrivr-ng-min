@@ -18,7 +18,7 @@ import {DresService} from "../query/dres.service";
 export class SideBarComponent {
 
     constructor(private userService: UserService, private dresService: DresService) {
-
+        this.loginState = localStorage.getItem('dresLogin') == 'true'
         if (localStorage.getItem('schema')) {
             this.selectedSchema = localStorage.getItem('schema') as string;
         }else {
@@ -26,6 +26,7 @@ export class SideBarComponent {
         }
     }
 
+    protected  loginState : Boolean = false;
     public schemas: string[] = Settings.schemas;
     public selectedSchema: string;
 
@@ -35,12 +36,16 @@ export class SideBarComponent {
         this.showSidebarPane = !this.showSidebarPane;
     }
 
+    tryLogout(){
+        this.dresService.logout();
+        this.loginState = localStorage.getItem('dresLogin') == 'true'
+    }
+
 
     tryLogin(username: string, password: string){
-        localStorage.setItem('dresUser', username);
-        localStorage.setItem('dresPassword', password);
 
         this.dresService.login(username, password);
+        this.loginState = localStorage.getItem('dresLogin') == 'true'
     }
 
     eventSchemaChange(change: string, $event: any) {

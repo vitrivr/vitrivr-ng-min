@@ -1,28 +1,37 @@
-
 <mat-sidenav-container class="sidenav-container" fullscreen style="margin-top:75px;">
 
-    <mat-sidenav [opened]="showSidebarPane"  class="sidenav" mode="push" position="end">
+    <mat-sidenav [opened]="showSidebarPane" class="sidenav" mode="push" position="end">
 
 
         <p>
-            <mat-form-field  appearance="fill">
+            <mat-form-field appearance="fill">
                 <mat-label>Username</mat-label>
-                <input #username matInput placeholder="Username"  value="">
+                <input #username matInput placeholder="Username" value="">
                 <mat-icon matSuffix></mat-icon>
             </mat-form-field>
         </p>
         <p>
             <mat-form-field appearance="fill">
                 <mat-label>Password</mat-label>
-                <input #userpassword  matInput placeholder="Password"  value="" type="password">
+                <input #userpassword matInput placeholder="Password" value="" type="password">
                 <mat-icon matSuffix></mat-icon>
             </mat-form-field>
         </p>
-        <button mat-raised-button color="primary" (click)="tryLogin(username.value, userpassword.value)">Login</button>
+
+        <div *ngIf="loginState">
+            <button #elseBlock mat-raised-button color="warn" (click)="tryLogout()">Logout</button>
+
+        </div>
+        <div *ngIf="!loginState">
+            <button mat-raised-button color="primary" (click)="tryLogin(username.value, userpassword.value)">Login
+            </button>
+        </div>
+
         <p>
 
             <mat-form-field>
-                <mat-select appearance="fill" placeholder="Running on schema" [(ngModel)]="selectedSchema" name="schema-selector" (selectionChange)="eventSchemaChange('change', $event)">
+                <mat-select appearance="fill" placeholder="Running on schema" [(ngModel)]="selectedSchema"
+                            name="schema-selector" (selectionChange)="eventSchemaChange('change', $event)">
                     <mat-option *ngFor="let schema of schemas" [value]="schema">
                         {{schema}}
                     </mat-option>
