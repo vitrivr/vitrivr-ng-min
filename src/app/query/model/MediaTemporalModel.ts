@@ -12,22 +12,18 @@
 import {ScoredObject} from "../scored-object.model";
 import {ScoredSegment} from "../scored-segment.model";
 import {MediaObjectModel} from "./MediaObjectModel";
-import {MediaTemporalModel} from "./MediaTemporalModel";
+import {MediaSegmentModel} from "./MediaSegmentModel";
 
 
-export class MediaSegmentModel extends ScoredSegment {
+export class MediaTemporalModel  {
+
     // clear ID for competition
+    id?: string;
     objectId?: string;
     objectUUID?: string;
-    temporalUUID?: string;
     mediaObjectModel?: MediaObjectModel;
-    mediaTemporalModel?: MediaTemporalModel;
-    start?: number;
-    end?: number;
-    startabs?: number;
-    endabs?: number;
-    count?: number;
-    sequenceNumber?: number;
-    override score: number = 0
+    score: number = 0;
+    segments: Array<MediaSegmentModel> = new Array<MediaSegmentModel>();
+
 }
 

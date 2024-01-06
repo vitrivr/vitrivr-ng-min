@@ -16,6 +16,8 @@ import {
 import {HttpContext, HttpContextToken} from "@angular/common/http";
 import {MediaObjectModel} from "./model/MediaObjectModel";
 import {MediaSegmentModel} from "./model/MediaSegmentModel";
+import {MediaTemporalModel} from "./model/MediaTemporalModel";
+import {matDatepickerAnimations} from "@angular/material/datepicker";
 
 @Injectable()
 export class QueryService {
@@ -24,9 +26,11 @@ export class QueryService {
 
     public queryRunning = new BehaviorSubject<Boolean>(false);
     public lastQueryResult = new BehaviorSubject<QueryResult>(new QueryResult([]));
+    public lastQueryTemporalState = new BehaviorSubject<Boolean>(false);
 
     private mediaSegments = new Map<string, MediaSegmentModel>()
     private mediaObjects = new Map<string, MediaObjectModel>()
+    private mediaTemporal = new Map<string, MediaTemporalModel>()
 
     private lastInputs = new BehaviorSubject<Map<string, string>>(new Map());
 
@@ -64,20 +68,47 @@ export class QueryService {
         return this.mediaSegments.get(segmentId) || null;
     }
 
-    private informationNeedDescriptionBuilder(inputs : Map<string, string>): InformationNeedDescription {
+    private informationNeedDescriptionBuilder(inputs: Map<string, string>): InformationNeedDescription {
         let jsonInputs: { [key: string]: InputData; } = {};
         let jsonOperations: { [key: string]: OperatorDescription; } = {};
         let temporalInputs: string[] = [];
         for (let [key, value] of inputs) {
             jsonInputs[key] = {"type": "TEXT", "data": `${value}`} as InputData;
-            jsonOperations[key+"retrieve"] =  {"type": "RETRIEVER", "field": "clip", "input": key} as OperatorDescription;
-            jsonOperations[key+"lookup"] =  {"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": key+"retrieve", "properties": {"field": "time", "keys": "start, end"}} as OperatorDescription;
-            jsonOperations[key+"relations"] =  {"type": "TRANSFORMER", "transformerName": "RelationExpander", "input": key+"lookup", "properties": {"outgoing": "partOf"}} as OperatorDescription;
-            temporalInputs.push(key+"relations");
+            jsonOperations[key + "retrieve"] = {
+                "type": "RETRIEVER",
+                "field": "clip",
+                "input": key
+            } as OperatorDescription;
+            jsonOperations[key + "lookup"] = {
+                "type": "TRANSFORMER",
+                "transformerName": "FieldLookup",
+                "input": key + "retrieve",
+                "properties": {"field": "time", "keys": "start, end"}
+            } as OperatorDescription;
+            jsonOperations[key + "relations"] = {
+                "type": "TRANSFORMER",
+                "transformerName": "RelationExpander",
+                "input": key + "lookup",
+                "properties": {"outgoing": "partOf"}
+            } as OperatorDescription;
+            temporalInputs.push(key + "relations");
         }
-        jsonOperations["temporal"] = {"type": "AGGREGATOR", "aggregatorName": "TemporalSequenceAggregator", "inputs": temporalInputs} as OperatorDescription;
-        jsonOperations["score"] = {"type": "TRANSFORMER", "transformerName": "ScoreAggregator",  "input": "temporal"} as OperatorDescription;
-        jsonOperations["filelookup"] ={"type": "TRANSFORMER", "transformerName": "FieldLookup", "input": "score", "properties": {"field": "file", "keys": "path"}} as OperatorDescription;
+        jsonOperations["temporal"] = {
+            "type": "AGGREGATOR",
+            "aggregatorName": "TemporalSequenceAggregator",
+            "inputs": temporalInputs
+        } as OperatorDescription;
+        jsonOperations["score"] = {
+            "type": "TRANSFORMER",
+            "transformerName": "ScoreAggregator",
+            "input": "temporal"
+        } as OperatorDescription;
+        jsonOperations["filelookup"] = {
+            "type": "TRANSFORMER",
+            "transformerName": "FieldLookup",
+            "input": "score",
+            "properties": {"field": "file", "keys": "path"}
+        } as OperatorDescription;
 
         let ind =
             {
@@ -130,11 +161,14 @@ export class QueryService {
     public genricQuery(informationNeedDescription: InformationNeedDescription) {
         this.mediaObjects.clear();
         this.mediaSegments.clear();
+        this.mediaTemporal.clear();
+
         let schema = localStorage.getItem('schema')
         if (schema == null) {
             console.error('no schema selected');
             return;
         }
+        let temporalState = false;
         this.retrievalService.postExecuteQuery(schema, informationNeedDescription, 'body', false, {
             httpHeaderAccept: 'application/json',
         }).subscribe(
@@ -167,31 +201,67 @@ export class QueryService {
                                 }
                             }
                         });
+
                         // Parse all objects find all according segments and add to map
                         content.forEach((retrievable) => {
-                            if (retrievable.type === "source") {
-                                let segments = new Array<MediaSegmentModel>();
+                            if (retrievable.type === "temporalSequence") {
+                                let temporalSegments = new Array<MediaSegmentModel>();
                                 retrievable.parts.forEach((part) => {
                                     let segment = this.mediaSegments.get(part);
                                     if (segment != null) {
-                                        segment.objectId = retrievable.id;
-                                        segments.push(segment);
+                                        temporalSegments.push(segment);
                                     } else {
                                         console.log('segment not found', part);
                                     }
                                 });
-                                let object: MediaObjectModel = {
+                                let temporal: MediaTemporalModel = {
                                     id: retrievable.id,
-                                    name: "",
-                                    path: (retrievable.properties["path"] as unknown as string).replace(/^.*[\\/]/, ''),
-                                    mediatype: retrievable.properties["mediatype"] as unknown as MediaObjectModel.MediatypeEnum,
-                                    exists: false,
-                                    contentURL: "",
+                                    mediaObjectModel: undefined,
                                     score: retrievable.score,
-                                    segments: segments
+                                    segments: temporalSegments
                                 };
+                                if (temporal.id != null) {
+                                    temporalState = true;
+                                    for (let temporalSegment of temporalSegments) {
+                                        temporalSegment.temporalUUID = temporal.id.toString();
+                                        temporalSegment.mediaTemporalModel = temporal;
+                                    }
+                                    this.mediaTemporal.set(temporal.id.toString(), temporal);
+                                }
+                            }
+                        });
+
+                        // Parse all objects find all according segments and add to map
+                        content.forEach((retrievable) => {
+                            if (retrievable.type === "source") {
+
+                                let objectSegments = new Array<MediaSegmentModel>();
+                                let objectTemporal = new Array<MediaTemporalModel>()
+
+                                retrievable.parts.forEach((part) => {
+                                    let segment = this.mediaSegments.get(part);
+                                    if (segment != null) {
+                                        segment.objectId = retrievable.id;
+                                        objectSegments.push(segment);
+                                        if (segment.mediaTemporalModel != null) {
+                                            objectTemporal.push(segment.mediaTemporalModel);
+                                        }
+                                    } else {
+                                        console.log('segment not found', part);
+                                    }
+                                });
+                                let object = new MediaObjectModel(
+                                    retrievable.id,
+                                    "",
+                                    (retrievable.properties["path"] as unknown as string).replace(/^.*[\\/]/, ''),
+                                    retrievable.properties["mediatype"] as unknown as MediaObjectModel.MediatypeEnum,
+                                    true,
+                                    "",
+                                    objectSegments,
+                                    objectTemporal
+                                );
                                 if (object.id != null) {
-                                    for (let segment of segments) {
+                                    for (let segment of objectSegments) {
                                         segment.objectUUID = object.id.toString();
                                         segment.objectId = object.path;
                                         segment.mediaObjectModel = object;
@@ -201,10 +271,16 @@ export class QueryService {
                             }
                         });
                         console.log('query result');
-
-                        this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values()).sort(
-                            (a, b) => b.score - a.score
-                        )));
+                        this.lastQueryTemporalState.next(temporalState);
+                        if (temporalState) {
+                            this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values()).sort(
+                                (a, b) => b.score - a.score
+                            )));
+                        } else {
+                            this.lastQueryResult.next(new QueryResult(Array.from(this.mediaObjects.values()).sort(
+                                (a, b) => b.score - a.score
+                            )));
+                        }
                         this.queryRunning.next(false);
                     }
                 }
@@ -213,6 +289,7 @@ export class QueryService {
     }
 
     public moreLikeThis(segmentId: string) {
+        this.queryRunning.next(true);
         let informationNeedDescription =
             {
                 "inputs": {
@@ -249,6 +326,7 @@ export class QueryService {
                 "output": "lookup2"
             } as InformationNeedDescription;
         this.genricQuery(informationNeedDescription);
+        this.queryRunning.next(false);
     }
 
     public getSegmentById(segmentId: string): MediaSegmentModel | undefined {

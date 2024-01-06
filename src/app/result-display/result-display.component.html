@@ -1,9 +1,19 @@
 <ng-container *ngIf="queryResults | async as results">
 
-    <div *ngFor="let obj of results" class="objectbox">
+    <div *ngFor="let obj of results">
+        <ng-container *ngIf="!temporal">
+            <div class="objectbox">
+                <app-result-tile *ngFor="let segment of obj.getSegments(); trackBy:trackBySegment"
+                                 [scoredSegment]="segment"></app-result-tile>
+            </div>
+        </ng-container>
 
-        <app-result-tile *ngFor="let segment of obj.segments; trackBy:trackBySegment" [scoredSegment]="segment"></app-result-tile>
-
+        <ng-container *ngIf="obj.getTemporalSegments().length > 0">
+            <div class="objectbox">
+                <app-result-tile *ngFor="let segment of obj.getTemporalSegments(); trackBy:trackBySegment"
+                                 [scoredSegment]="segment"></app-result-tile>
+            </div>
+        </ng-container>
     </div>
 
 </ng-container>
