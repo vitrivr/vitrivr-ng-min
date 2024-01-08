@@ -16,8 +16,9 @@ export class ResultDisplayComponent {
   }
 
   public queryResults = this.queryService.lastQueryResult.asObservable().pipe(map(res => res == null ? new Array<ScoredObject>() : res.objects));
-  public temporal = this.queryService.lastQueryTemporalState.asObservable();
-
+  getTemporalState(){
+    return this.queryService.lastQueryTemporalState.getValue().valueOf();
+  }
   trackBySegment(index: number, item: ScoredSegment){
     return item.id;
   }

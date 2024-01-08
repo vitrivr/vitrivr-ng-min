@@ -1,7 +1,7 @@
 <ng-container *ngIf="queryResults | async as results">
 
     <div *ngFor="let obj of results">
-        <ng-container *ngIf="!temporal">
+        <ng-container *ngIf="!getTemporalState()">
             <div class="objectbox">
                 <app-result-tile *ngFor="let segment of obj.getSegments(); trackBy:trackBySegment"
                                  [scoredSegment]="segment"></app-result-tile>
