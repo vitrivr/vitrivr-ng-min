@@ -236,15 +236,16 @@ export class QueryService {
                             if (retrievable.type === "source") {
 
                                 let objectSegments = new Array<MediaSegmentModel>();
-                                let objectTemporal = new Array<MediaTemporalModel>()
+                                let objectTemporal = new Set<MediaTemporalModel>()
 
                                 retrievable.parts.forEach((part) => {
                                     let segment = this.mediaSegments.get(part);
                                     if (segment != null) {
                                         segment.objectId = retrievable.id;
                                         objectSegments.push(segment);
+
                                         if (segment.mediaTemporalModel != null) {
-                                            objectTemporal.push(segment.mediaTemporalModel);
+                                            objectTemporal.add(segment.mediaTemporalModel);
                                         }
                                     } else {
                                         console.log('segment not found', part);
@@ -258,7 +259,7 @@ export class QueryService {
                                     true,
                                     "",
                                     objectSegments,
-                                    objectTemporal
+                                    Array.from(objectTemporal.values())
                                 );
                                 if (object.id != null) {
                                     for (let segment of objectSegments) {
