@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {
     LoginRequest,
-    LogService, QueryEvent, QueryResult as DresQueryResult, QueryResultLog,
+    LogService, QueryEvent, QueryResult as DresQueryResult, QueryResultLog, QueryEventCategory,
     SubmissionService,
     SuccessfulSubmissionsStatus,
     UserService
@@ -52,10 +52,10 @@ export class DresService {
             this.token = sid
         } else {
             if (username.trim().length > 0 && password.trim().length > 0) {
-                this.userService.getApiV1User().subscribe({
+                this.userService.getApiV2User().subscribe({
                     error: err => {
                         console.log('[DresService] no active session, trying to log in')
-                        this.userService.postApiV1Login({
+                        this.userService.postApiV2Login({
                             username: username,
                             password: password
                         } as LoginRequest).subscribe({
@@ -141,7 +141,7 @@ export class DresService {
         for (const term of terms) {
             events.push({
                 type: term[0],
-                category: QueryEvent.CategoryEnum.TEXT,
+                category: QueryEventCategory.TEXT,
                 value: term[1],
                 timestamp: Date.now()
             } as QueryEvent);
@@ -155,7 +155,7 @@ export class DresService {
             events: events
         } as QueryResultLog
 
-        this.logService.postApiV1LogResult(this.token, resultLog).subscribe();
+        this.logService.postApiV2LogResult(this.token, resultLog).subscribe();
 
     }
 
