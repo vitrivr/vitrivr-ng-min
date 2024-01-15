@@ -16,9 +16,9 @@ export class Settings {
    * Expects that objectBasePath/<objectId> serves the video
    */
   public static readonly objectBasePath = 'http://localhost:8080/media';
-  public static readonly moreLikeThisCategory = 'cliptext';
+  //public static readonly moreLikeThisCategory = 'cliptext';
   public static readonly queryCategories = [
-    ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisper', 'Speech']
+    ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisperasr', 'Speech']
   ];
   public static readonly dresBaseApi = "https://interactivevideoretrieval.com"
   public static readonly dresUser = 'vitrivr1'
