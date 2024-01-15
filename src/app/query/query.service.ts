@@ -165,9 +165,11 @@ export class QueryService {
 
     let schema = localStorage.getItem('schema')
     if (schema == null) {
-      console.error('no schema selected');
-      this.queryRunning.next(false);
-      return;
+      console.log('no schema selected, using default');
+      schema = Settings.schema[0];
+      //console.error('no schema selected');
+      //this.queryRunning.next(false);
+      //return;
     }
     let temporalState = false;
     this.retrievalService.postExecuteQuery(schema, informationNeedDescription, 'body', false, {
