@@ -6,10 +6,19 @@
                 <img src="../assets/images/vitrivr_logo.png" alt="minimal"> minimal
             </button>
         </div>
+
+        <div>
+            <mat-form-field>
+                <mat-label>QA Session Text</mat-label>
+                <input #textToSubmit matInput placeholder="Text to submit" value="">
+            </mat-form-field>
+            <button style="flex-basis: 20%;" mat-icon-button matTooltip="Submit the current text" color="accent" (click)="textSubmit(textToSubmit.value)"><mat-icon>send</mat-icon></button>
+        </div>
         <mat-chip-listbox aria-label="Fish selection">
             <mat-chip> Schema: {{localStorage.getItem('schema')}}</mat-chip>
             <mat-chip>User: {{localStorage.getItem('dresUser')}}</mat-chip>
             <mat-chip color="accent">Login: {{localStorage.getItem('dresLogin')}}</mat-chip>
+            <mat-chip color="accent">Evaluation Id: {{localStorage.getItem('evaluationId')}}</mat-chip>
             <mat-chip (click)="child.toggleSidebarPane()"
                     matTooltip="Toggle query refinement sidebar">
                 <mat-icon>storage</mat-icon>

@@ -40,6 +40,9 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatChipsModule} from "@angular/material/chips";
+import {MatCardModule} from "@angular/material/card";
+import {MatDividerModule} from "@angular/material/divider";
+import {MatListModule} from "@angular/material/list";
 
 
 @NgModule({
@@ -98,6 +101,9 @@ import {MatChipsModule} from "@angular/material/chips";
         MatSelectModule,
         MatGridListModule,
         MatChipsModule,
+        MatCardModule,
+        MatDividerModule,
+        MatListModule,
     ],
     providers: [
         QueryService,

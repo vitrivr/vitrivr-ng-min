@@ -24,11 +24,16 @@ export class SideBarComponent {
         }else {
             this.selectedSchema = Settings.schemas[0];
         }
+        this.selectedEvalId = "test";
+        this.evalIds = this.dresService.getEvaluationIds();
     }
 
     protected  loginState : Boolean = false;
     public schemas: string[] = Settings.schemas;
     public selectedSchema: string;
+    public selectedEvalId: string;
+
+    public evalIds: string[] = ["test", "jdsald"];
 
     public showSidebarPane = false;
 
@@ -48,9 +53,19 @@ export class SideBarComponent {
         this.loginState = localStorage.getItem('dresLogin') == 'true'
     }
 
+    trySaveId(id: string){
+        localStorage.setItem('evaluationId', id);
+    }
     eventSchemaChange(change: string, $event: any) {
         console.log($event);
         this.selectedSchema = $event.value
         localStorage.setItem('schema', this.selectedSchema);
+    }
+
+    eventEvalIdChange(change: string, $event: any) {
+        this.evalIds = this.dresService.getEvaluationIds();
+        console.log($event);
+        this.selectedEvalId = $event.value
+        localStorage.setItem('evaluationId',  $event.value);
     }
 }

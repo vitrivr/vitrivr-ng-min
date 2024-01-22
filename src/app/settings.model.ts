@@ -20,7 +20,7 @@ export class Settings {
   public static readonly queryCategories = [
     ['clip', 'Scene description'], ['ocr', 'Text on Screen'], ['whisperasr', 'Speech']
   ];
-  public static readonly dresBaseApi = "https://interactivevideoretrieval.com"
+  public static readonly dresBaseApi = "https://vbs.videobrowsing.org"
   public static readonly dresUser = 'vitrivr1'
   public static readonly dresPassword = 'vitrivr1'
 

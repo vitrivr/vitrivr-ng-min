@@ -2,42 +2,95 @@
 
     <mat-sidenav [opened]="showSidebarPane" class="sidenav" mode="push" position="end">
 
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Login</mat-card-title>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
 
-        <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Username</mat-label>
-                <input #username matInput placeholder="Username" value="">
-                <mat-icon matSuffix></mat-icon>
-            </mat-form-field>
-        </p>
-        <p>
-            <mat-form-field appearance="fill">
-                <mat-label>Password</mat-label>
-                <input #userpassword matInput placeholder="Password" value="" type="password">
-                <mat-icon matSuffix></mat-icon>
-            </mat-form-field>
-        </p>
 
-        <div *ngIf="loginState">
-            <button #elseBlock mat-raised-button color="warn" (click)="tryLogout()">Logout</button>
+                <p>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Username</mat-label>
+                        <input #username matInput placeholder="Username" value="">
+                        <mat-icon matSuffix></mat-icon>
+                    </mat-form-field>
+                </p>
+                <p>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Password</mat-label>
+                        <input #userpassword matInput placeholder="Password" value="" type="password">
+                        <mat-icon matSuffix></mat-icon>
+                    </mat-form-field>
+                </p>
 
-        </div>
-        <div *ngIf="!loginState">
-            <button mat-raised-button color="primary" (click)="tryLogin(username.value, userpassword.value)">Login
-            </button>
-        </div>
 
-        <p>
+                <div *ngIf="loginState">
+                    <button #elseBlock mat-raised-button color="warn" (click)="tryLogout()">Logout</button>
 
-            <mat-form-field>
-                <mat-select appearance="fill" placeholder="Running on schema" [(ngModel)]="selectedSchema"
-                            name="schema-selector" (selectionChange)="eventSchemaChange('change', $event)">
-                    <mat-option *ngFor="let schema of schemas" [value]="schema">
-                        {{schema}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </p>
+                </div>
+                <div *ngIf="!loginState">
+                    <button mat-raised-button color="primary" (click)="tryLogin(username.value, userpassword.value)">
+                        Login
+                    </button>
+                </div>
+
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Evaluation ID</mat-card-title>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+                <mat-form-field>
+                    <mat-select appearance="fill" placeholder="EvalId" [(ngModel)]="selectedEvalId"
+                                name="evalid-selector"  (selectionChange)="eventEvalIdChange('change', $event)">
+                        <mat-option *ngFor="let evalId of evalIds" [value]="evalId">
+                            {{ evalId }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+
+                <p>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Save Id</mat-label>
+                        <input #evaluationId matInput placeholder="Evaluation ID" value="">
+                        <mat-icon matSuffix></mat-icon>
+                    </mat-form-field>
+                </p>
+                <button mat-raised-button color="primary" (click)="trySaveId(evaluationId.value)">Save Id
+                </button>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title-group>
+                    <mat-card-title>Schema</mat-card-title>
+                </mat-card-title-group>
+            </mat-card-header>
+            <mat-card-content>
+
+
+                <p>
+
+                    <mat-form-field>
+                        <mat-select appearance="fill" placeholder="Running on schema" [(ngModel)]="selectedSchema"
+                                    name="schema-selector" (selectionChange)="eventSchemaChange('change', $event)">
+                            <mat-option *ngFor="let schema of schemas" [value]="schema">
+                                {{ schema }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </p>
+            </mat-card-content>
+        </mat-card>
 
     </mat-sidenav>
 

@@ -1,10 +1,13 @@
 import {Injectable} from "@angular/core";
 import {
     LoginRequest,
-    LogService, QueryEvent, QueryResult as DresQueryResult, QueryResultLog, QueryEventCategory,
+    LogService,
+    QueryEvent,
+    QueryResultLog,
+    QueryEventCategory,
     SubmissionService,
     SuccessfulSubmissionsStatus,
-    UserService
+    UserService, RankedAnswer, ApiClientAnswer, ApiClientSubmission, EvaluationClientService
 } from "../../../openapi/dres";
 import {MediaSegmentDescriptor} from "../../../openapi/cineast";
 import {Settings} from "../settings.model";
@@ -19,7 +22,7 @@ export class DresService {
     // Dres Authentification for each ...
     private token = ''
 
-    constructor(private submissionService: SubmissionService, private userService: UserService, private logService: LogService) {
+    constructor(private submissionService: SubmissionService, private userService: UserService, private logService: LogService, private evalService: EvaluationClientService) {
         let sid = localStorage.getItem('sessionId')
         let loginstate = localStorage.getItem('dresLogin')
         if (sid && loginstate == 'true') {
@@ -84,11 +87,43 @@ export class DresService {
     }
 
     public submitByTime(id: string, seconds: number) {
-        const timecode = DresService.toTimecode(seconds)
-        console.log("[DresService] Timecode: ", timecode);
+        console.log("[DresService] Timecode: ", seconds);
         console.log("[DresService] Id: ", id);
 
-        this.submissionService.getApiV1Submit(
+        var ms = seconds * 1000;
+
+        var evalId = localStorage.getItem('evaluationId');
+        if (evalId == null) {
+            console.log("No evaluation id found");
+            return;
+        }
+
+        var submission = {
+            "answerSets": [
+                {
+                    "answers": [
+                        {
+                            "mediaItemName": id,
+                            "start": ms,
+                            "end": ms
+                        }
+                    ]
+                }
+            ]
+        } as ApiClientSubmission
+
+        this.submissionService.postApiV2SubmitByEvaluationId(
+            evalId,
+            submission,
+            this.token,
+        ).subscribe((result) => {
+            if (this.resultHandler) {
+                this.resultHandler(result);
+            }
+            console.log('[DresService] Submission result: ', result);
+        })
+
+/*        this.submissionService.getApiV1Submit(
             undefined,
             id,
             undefined,
@@ -101,8 +136,41 @@ export class DresService {
                 this.resultHandler(result);
             }
             console.log('[DresService] Submission result: ', result);
+        })*/
+    }
+
+    public submitText(text: string) {
+
+        var evalId = localStorage.getItem('evaluationId');
+        if (evalId == null) {
+            console.log("No evaluation id found");
+            return;
+        }
+
+        var submission = {
+            "answerSets": [
+                {
+                    "answers": [
+                        {
+                            "text": text,
+                        }
+                    ]
+                }
+            ]
+        } as ApiClientSubmission
+
+        this.submissionService.postApiV2SubmitByEvaluationId(
+            evalId,
+            submission,
+            this.token,
+        ).subscribe((result) => {
+            if (this.resultHandler) {
+                this.resultHandler(result);
+            }
+            console.log('[DresService] Submission result: ', result);
         })
     }
+
 
     public submit(segment: MediaSegmentDescriptor) {
         if (!segment || !segment.objectId) {
@@ -128,13 +196,19 @@ export class DresService {
         const queryResults = result.objects.flatMap((scoredObject, objectIndex) => {
             return scoredObject.segments.map((segment, segmentIndex) => {
                 return {
-                    item: segment.id,
-                    score: segment.score,
+                    answer: {
+                        text: segment.objectId,
+                        mediaItemName: "",
+                        mediaItemCollectionName: "",
+                        start: segment.startabs,
+                        end: segment.endabs,
+                    } as ApiClientAnswer,
                     rank: rankCounter++
-                } as DresQueryResult;
+                }
             });
 
         }) || [];
+
 
         let events = new Array<QueryEvent>();
 
@@ -155,8 +229,26 @@ export class DresService {
             events: events
         } as QueryResultLog
 
-        this.logService.postApiV2LogResult(this.token, resultLog).subscribe();
+        var id = localStorage.getItem('evaluationId');
+        if (id == null) {
+            console.log("No evaluation id found");
+            return;
+        }
 
+        this.logService.postApiV2LogQueryByEvaluationId(id, this.token, resultLog).subscribe();
+        //this.logService.postApiV2LogResult(this.token, resultLog).subscribe();
+
+    }
+
+    public getEvaluationIds() : string[] {
+        var ids = new Array<string>();
+        this.evalService.getApiV2ClientEvaluationList(this.token).subscribe((result) => {
+            result.forEach((result) => {
+                ids.push(result.id as string);
+            });
+        }
+        );
+        return ids;
     }
 
     private static toTimecode(seconds: number): string {
