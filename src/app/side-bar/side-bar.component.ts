@@ -1,6 +1,6 @@
 import {FormControl} from '@angular/forms';
 import {QueryService} from './../query/query.service';
-import {Component, HostListener, NgModule} from '@angular/core';
+import {AfterViewInit, Component, HostListener, NgModule, OnInit} from '@angular/core';
 import {Settings} from "../settings.model";
 import {FormsModule} from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
@@ -8,6 +8,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {LoginRequest, UserService} from "../../../openapi/dres";
 import {DresService} from "../query/dres.service";
+import * as zlib from "zlib";
 
 
 @Component({
@@ -15,7 +16,7 @@ import {DresService} from "../query/dres.service";
     templateUrl: './side-bar.component.html',
     styleUrls: ['./side-bar.component.scss'],
 })
-export class SideBarComponent {
+export class SideBarComponent implements OnInit{
 
     constructor(private userService: UserService, private dresService: DresService) {
         this.loginState = localStorage.getItem('dresLogin') == 'true'
@@ -24,8 +25,11 @@ export class SideBarComponent {
         }else {
             this.selectedSchema = Settings.schemas[0];
         }
-        this.selectedEvalId = "test";
+        this.selectedEvalId = "";
         this.evalIds = this.dresService.getEvaluationIds();
+    }
+    ngOnInit(): void{
+        console.log("Loading Siebar");
     }
 
     protected  loginState : Boolean = false;
@@ -33,7 +37,7 @@ export class SideBarComponent {
     public selectedSchema: string;
     public selectedEvalId: string;
 
-    public evalIds: string[] = ["test", "jdsald"];
+    public evalIds: string[] = [];
 
     public showSidebarPane = false;
 
@@ -51,6 +55,7 @@ export class SideBarComponent {
 
         this.dresService.login(username, password);
         this.loginState = localStorage.getItem('dresLogin') == 'true'
+        this.ngOnInit();
     }
 
     trySaveId(id: string){
@@ -66,6 +71,5 @@ export class SideBarComponent {
         this.evalIds = this.dresService.getEvaluationIds();
         console.log($event);
         this.selectedEvalId = $event.value
-        localStorage.setItem('evaluationId',  $event.value);
     }
 }

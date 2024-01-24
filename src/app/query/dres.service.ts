@@ -13,6 +13,7 @@ import {MediaSegmentDescriptor} from "../../../openapi/cineast";
 import {Settings} from "../settings.model";
 import {QueryResult} from "./query-result.model";
 import {elementSelectors} from "@angular/cdk/schematics";
+import {defer, firstValueFrom} from "rxjs";
 
 @Injectable()
 export class DresService {
@@ -86,16 +87,22 @@ export class DresService {
         }
     }
 
-    public submitByTime(id: string, seconds: number) {
-        console.log("[DresService] Timecode: ", seconds);
+    public submitByStartTime(id: string, startseconds: number) {
+        this.submitByTime(id, startseconds, startseconds + 0.001);
+    }
+
+
+    public submitByTime(id: string, startseconds: number, endseconds: number) {
+        console.log("[DresService] Timecode: ", startseconds, endseconds);
         console.log("[DresService] Id: ", id);
 
-        var ms = seconds * 1000;
+        var msStart = startseconds * 1000;
+        var msEnd = endseconds * 1000;
 
         var evalId = localStorage.getItem('evaluationId');
         if (evalId == null) {
             console.log("No evaluation id found");
-            return;
+            return
         }
 
         var submission = {
@@ -104,8 +111,8 @@ export class DresService {
                     "answers": [
                         {
                             "mediaItemName": id,
-                            "start": ms,
-                            "end": ms
+                            "start": msStart,
+                            "end": msEnd
                         }
                     ]
                 }
@@ -116,27 +123,37 @@ export class DresService {
             evalId,
             submission,
             this.token,
-        ).subscribe((result) => {
-            if (this.resultHandler) {
-                this.resultHandler(result);
+        ).subscribe({
+                error: (error) => {
+                    console.log('error during querying', error);
+                    throw error;
+                },
+                next:
+                    (result) => {
+                        if (this.resultHandler) {
+                            this.resultHandler(result);
+                        }
+                        console.log('[DresService] Submission result: ', result);
+                    }
             }
-            console.log('[DresService] Submission result: ', result);
-        })
+        )
+        return;
 
-/*        this.submissionService.getApiV1Submit(
-            undefined,
-            id,
-            undefined,
-            undefined,
-            undefined,
-            timecode,
-            this.token
-        ).subscribe((result) => {
-            if (this.resultHandler) {
-                this.resultHandler(result);
-            }
-            console.log('[DresService] Submission result: ', result);
-        })*/
+
+        /*        this.submissionService.getApiV1Submit(
+                    undefined,
+                    id,
+                    undefined,
+                    undefined,
+                    undefined,
+                    timecode,
+                    this.token
+                ).subscribe((result) => {
+                    if (this.resultHandler) {
+                        this.resultHandler(result);
+                    }
+                    console.log('[DresService] Submission result: ', result);
+                })*/
     }
 
     public submitText(text: string) {
@@ -175,10 +192,13 @@ export class DresService {
     public submit(segment: MediaSegmentDescriptor) {
         if (!segment || !segment.objectId) {
             console.error("Cannot submit a falsy segment!")
-            return;
+            throw new Error("Cannot submit a falsy segment!")
         }
-
-        this.submitByTime(segment?.objectId.split('.')[0] ?? 'n/a', ((segment.startabs || 0) + (segment.endabs || 0)) / 2)
+        try {
+            this.submitByTime(segment?.objectId.split('.')[0] ?? 'n/a', (segment.startabs || 0), (segment.endabs || 0))
+        } catch (e) {
+            throw e;
+        }
     }
 
     public logResults(result: QueryResult, terms: Map<string, string>) {
@@ -197,8 +217,8 @@ export class DresService {
             return scoredObject.segments.map((segment, segmentIndex) => {
                 return {
                     answer: {
-                        text: segment.objectId,
-                        mediaItemName: "",
+                        text: "",
+                        mediaItemName: segment.objectId,
                         mediaItemCollectionName: "",
                         start: segment.startabs,
                         end: segment.endabs,
@@ -240,13 +260,13 @@ export class DresService {
 
     }
 
-    public getEvaluationIds() : string[] {
+    public getEvaluationIds(): string[] {
         var ids = new Array<string>();
         this.evalService.getApiV2ClientEvaluationList(this.token).subscribe((result) => {
-            result.forEach((result) => {
-                ids.push(result.id as string);
-            });
-        }
+                result.forEach((result) => {
+                    ids.push(result.id as string);
+                });
+            }
         );
         return ids;
     }

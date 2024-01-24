@@ -77,6 +77,6 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
 
   public submit() {
     // @ts-ignore
-    this.dres.submitByTime(this.currentSegment().objectId.split('.')[0] ?? 'n/a',this.video.nativeElement.currentTime);
+    this.dres.submitByStartTime(this.currentSegment().objectId.split('.')[0] ?? 'n/a', this.video.nativeElement.currentTime);
   }
 }
