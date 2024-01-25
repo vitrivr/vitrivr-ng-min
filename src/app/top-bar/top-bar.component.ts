@@ -8,6 +8,7 @@ import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {DresService} from "../query/dres.service";
 import {MediaSegmentDescriptor} from "../../../openapi/cineast";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 
 @Component({
@@ -19,7 +20,8 @@ export class TopBarComponent {
 
     constructor(
         public queryService: QueryService,
-        private dres: DresService) {
+        private dres: DresService,
+        private snackBar: MatSnackBar) {
 
     }
 
@@ -73,6 +75,44 @@ export class TopBarComponent {
     }
 
     textSubmit(text: string) {
-        this.dres.submitText(text)
+        if (text.trim().length > 0) {
+        try {
+            this.dres.submitText(text).subscribe(
+                {
+                    next: (result) => {
+                        console.log('[DresService] Submission result: ', result);
+                        let snackBarRef = this.snackBar.open(" submitted successfully", "Ok", {
+                            duration: 3000,
+                            panelClass: ['green-snackbar']
+                        });
+                    },
+                    error: (error) => {
+                        console.log('[DresService] Submission error: ', error);
+                        if (error.status == 412) {
+                            let snackBarRef = this.snackBar.open(" Status" + error.status + " Message: " + error.error.description, "Warn", {
+                                duration: 5000,
+                                panelClass: ['yellow-snackbar']
+                            })
+                        } else {
+                            let snackBarRef = this.snackBar.open(" Status" + error.status + " Message: " + error.error.description, "Error", {
+                                duration: 5000,
+                                panelClass: ['red-snackbar']
+                            })
+                        }
+                    }
+                }
+            )
+        } catch (e) {
+            console.log('Could not submit due to no text being present')
+            let snackBarRef = this.snackBar.open( "Error submitting" + e, "Error", {
+                duration: 5000,
+                panelClass: ['red-snackbar']
+            })
+        }}else {
+            let snackBarRef = this.snackBar.open( "Error submitting" + "No text found", "Error", {
+                duration: 5000,
+                panelClass: ['red-snackbar']
+            })
+        }
     }
 }

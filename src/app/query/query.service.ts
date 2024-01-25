@@ -138,7 +138,7 @@ export class QueryService {
 
         for (let input of this.inputs) {
             for (let [key, value] of input) {
-                if (value.value == null) {
+                if (value.value == null || value.value === '') {
                     continue;
                 }
                 termsMap.set(key + ic, value.value);

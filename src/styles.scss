@@ -70,4 +70,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     --mat-mdc-snack-bar-button-color: #fff;
     --mdc-snackbar-supporting-text-color: #fff;
   }
+  &.yellow-snackbar {
+    --mdc-snackbar-container-color: #e2c11e;
+    --mat-mdc-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
 }

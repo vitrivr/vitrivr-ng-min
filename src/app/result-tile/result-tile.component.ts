@@ -83,23 +83,43 @@ export class ResultTileComponent implements AfterViewInit {
                 this.dresService.submit(segment).subscribe({
                         next: (result) => {
                             console.log('[DresService] Submission result: ', result);
-                            let snackBarRef = this.snackBar.open(segmentId + " submitted successfully", "Ok", {duration: 300000, panelClass: ['green-snackbar']});
+                            let snackBarRef = this.snackBar.open(segmentId + " submitted successfully", "Ok", {
+                                duration: 3000,
+                                panelClass: ['green-snackbar']
+                            });
                         },
                         error: (error) => {
                             console.log('[DresService] Submission error: ', error);
-                            let snackBarRef = this.snackBar.open(segmentId + " Error submitting" + error, "Ok", {duration: 300000, panelClass: ['red-snackbar']})
+                            if (error.status == 412) {
+                                let snackBarRef = this.snackBar.open(segmentId + " Status" + error.status + " Message: "+ error.error.description, "Warn", {
+                                    duration: 5000,
+                                    panelClass: ['yellow-snackbar']
+                                })
+                            }
+                            else {
+                                let snackBarRef = this.snackBar.open(segmentId + " Status" + error.status + " Message: "+ error.error.description, "Error", {
+                                    duration: 5000,
+                                    panelClass: ['red-snackbar']
+                                })
+                            }
                         }
                     }
                 );
 
             } catch (e) {
                 console.log('Could not submit due to no segment being present')
-                let snackBarRef = this.snackBar.open(segmentId + "Error submitting" + e, "Ok", {duration: 300000, panelClass: ['red-snackbar']})
+                let snackBarRef = this.snackBar.open(segmentId + "Error submitting" + e, "Error", {
+                    duration: 5000,
+                    panelClass: ['red-snackbar']
+                })
             }
 
         } else {
             console.log('Could not submit due to no segment being present')
-            let snackBarRef = this.snackBar.open(segmentId + "Couldnt submit due to no segment being present", "Ok", {duration: 3000, panelClass: ['red-snackbar']})
+            let snackBarRef = this.snackBar.open(segmentId + "Couldnt submit due to no segment being present", "Error", {
+                duration: 5000,
+                panelClass: ['red-snackbar']
+            })
         }
 
     }
