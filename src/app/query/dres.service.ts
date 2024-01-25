@@ -122,7 +122,7 @@ export class DresService {
             this.token,
         );
 
-        dresObserver.subscribe({
+/*        dresObserver.subscribe({
                 error: (error) => {
                     console.log('error during querying', error);
                     throw error;
@@ -135,7 +135,7 @@ export class DresService {
                         console.log('[DresService] Submission result: ', result);
                     }
             }
-        )
+        )*/
 
         return dresObserver;
 
@@ -181,12 +181,12 @@ export class DresService {
             submission,
             this.token,
         )
-        dresObservalble.subscribe((result) => {
+/*        dresObservalble.subscribe((result) => {
             if (this.resultHandler) {
                 this.resultHandler(result);
             }
             console.log('[DresService] Submission result: ', result);
-        })
+        })*/
         return dresObservalble;
     }
 
