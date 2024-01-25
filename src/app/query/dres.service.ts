@@ -161,7 +161,7 @@ export class DresService {
         var evalId = localStorage.getItem('evaluationId');
         if (evalId == null) {
             console.log("No evaluation id found");
-            return;
+            throw new Error("No evaluation id found");
         }
 
         var submission = {
@@ -176,16 +176,18 @@ export class DresService {
             ]
         } as ApiClientSubmission
 
-        this.submissionService.postApiV2SubmitByEvaluationId(
+        var dresObservalble = this.submissionService.postApiV2SubmitByEvaluationId(
             evalId,
             submission,
             this.token,
-        ).subscribe((result) => {
+        )
+        dresObservalble.subscribe((result) => {
             if (this.resultHandler) {
                 this.resultHandler(result);
             }
             console.log('[DresService] Submission result: ', result);
         })
+        return dresObservalble;
     }
 
 
