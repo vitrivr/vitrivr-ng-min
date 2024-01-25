@@ -293,6 +293,11 @@ export class QueryService {
     }
 
     public moreLikeThis(segmentId: string) {
+        if (this.queryRunning.getValue()) {
+            console.log('only one query can be active');
+            return;
+        }
+        console.log('starting query');
         this.queryRunning.next(true);
         let informationNeedDescription =
             {
@@ -330,7 +335,7 @@ export class QueryService {
                 "output": "lookup2"
             } as InformationNeedDescription;
         this.genricQuery(informationNeedDescription);
-        this.queryRunning.next(false);
+
     }
 
     public getSegmentById(segmentId: string): MediaSegmentModel | undefined {
