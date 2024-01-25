@@ -80,16 +80,26 @@ export class ResultTileComponent implements AfterViewInit {
 
         if (segment) {
             try {
-                this.dresService.submit(segment);
-                let snackBarRef = this.snackBar.open(segmentId + " submitted successfully")
+                this.dresService.submit(segment).subscribe({
+                        next: (result) => {
+                            console.log('[DresService] Submission result: ', result);
+                            let snackBarRef = this.snackBar.open(segmentId + " submitted successfully", "Ok", {duration: 300000, panelClass: ['green-snackbar']});
+                        },
+                        error: (error) => {
+                            console.log('[DresService] Submission error: ', error);
+                            let snackBarRef = this.snackBar.open(segmentId + " Error submitting" + error, "Ok", {duration: 300000, panelClass: ['red-snackbar']})
+                        }
+                    }
+                );
+
             } catch (e) {
                 console.log('Could not submit due to no segment being present')
-                let snackBarRef = this.snackBar.open(segmentId + "Error submitting" + e)
+                let snackBarRef = this.snackBar.open(segmentId + "Error submitting" + e, "Ok", {duration: 300000, panelClass: ['red-snackbar']})
             }
 
         } else {
             console.log('Could not submit due to no segment being present')
-            let snackBarRef = this.snackBar.open(segmentId + "Couldnt submit due to no segment being present")
+            let snackBarRef = this.snackBar.open(segmentId + "Couldnt submit due to no segment being present", "Ok", {duration: 3000, panelClass: ['red-snackbar']})
         }
 
     }

@@ -10,10 +10,7 @@ import {
     UserService, RankedAnswer, ApiClientAnswer, ApiClientSubmission, EvaluationClientService
 } from "../../../openapi/dres";
 import {MediaSegmentDescriptor} from "../../../openapi/cineast";
-import {Settings} from "../settings.model";
 import {QueryResult} from "./query-result.model";
-import {elementSelectors} from "@angular/cdk/schematics";
-import {defer, firstValueFrom} from "rxjs";
 
 @Injectable()
 export class DresService {
@@ -88,7 +85,7 @@ export class DresService {
     }
 
     public submitByStartTime(id: string, startseconds: number) {
-        this.submitByTime(id, startseconds, startseconds + 0.001);
+        return  this.submitByTime(id, startseconds, startseconds + 0.002);
     }
 
 
@@ -102,7 +99,7 @@ export class DresService {
         var evalId = localStorage.getItem('evaluationId');
         if (evalId == null) {
             console.log("No evaluation id found");
-            return
+            throw new Error("No evaluation id found");
         }
 
         var submission = {
@@ -119,11 +116,13 @@ export class DresService {
             ]
         } as ApiClientSubmission
 
-        this.submissionService.postApiV2SubmitByEvaluationId(
+        let dresObserver = this.submissionService.postApiV2SubmitByEvaluationId(
             evalId,
             submission,
             this.token,
-        ).subscribe({
+        );
+
+        dresObserver.subscribe({
                 error: (error) => {
                     console.log('error during querying', error);
                     throw error;
@@ -137,7 +136,8 @@ export class DresService {
                     }
             }
         )
-        return;
+
+        return dresObserver;
 
 
         /*        this.submissionService.getApiV1Submit(
@@ -195,7 +195,7 @@ export class DresService {
             throw new Error("Cannot submit a falsy segment!")
         }
         try {
-            this.submitByTime(segment?.objectId.split('.')[0] ?? 'n/a', (segment.startabs || 0), (segment.endabs || 0))
+            return this.submitByTime(segment?.objectId.split('.')[0] ?? 'n/a', (segment.startabs || 0), (segment.endabs || 0))
         } catch (e) {
             throw e;
         }

@@ -53,3 +53,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .spacer-flex {
   flex: 1 1 auto;
 }
+
+.mat-mdc-snack-bar-container {
+  &.blue-snackbar {
+       --mdc-snackbar-container-color: #2196f3;
+       --mat-mdc-snack-bar-button-color: #fff;
+       --mdc-snackbar-supporting-text-color: #fff;
+     }
+  &.green-snackbar {
+    --mdc-snackbar-container-color: #088c00;
+    --mat-mdc-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+  &.red-snackbar {
+    --mdc-snackbar-container-color: #e21e31;
+    --mat-mdc-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+}
