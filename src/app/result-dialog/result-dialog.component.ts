@@ -36,7 +36,8 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.segment = this.queryService.getSegmentById(this.data.id);
-    let url = `${this.path}`+"/"+`${this.schema}`+"/"+`${this.segment?.mediaObjectModel?.path}`;
+    var formatAlignedModel = this.segment?.mediaObjectModel?.path?.split('.')[0]+".mp4";
+    let url = `${this.path}`+"/"+`${this.schema}`+"/"+`${formatAlignedModel}`;
     this.mediaUrl = of(url);
   }
 
@@ -44,7 +45,7 @@ export class ResultDialogComponent implements OnInit, AfterViewInit {
     if(this.video){
       this.video.nativeElement.addEventListener('timeupdate', () => {
         // @ts-ignore
-        if(this.currentSegment()?.startabs == this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
+        if(this.currentSegment()?.startabs <= this.video?.nativeElement.currentTime && this.video?.nativeElement.currentTime <= this.currentSegment()?.endabs){
           this.addOnSegmentClass();
         }else{
           this.removeOnSegmentClass();
